@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,13 +26,12 @@ public class ReadyPanel extends JPanel {
     ObjectInputStream ois;
     Socket clientSocket;
     JTextArea chatTextArea; //전체 채팅창
-    AppleGameClient appleGameClient;
+//    AppleGameClient appleGameClient;
     JLabel readyLabel; //전체 화면에 ready를 나타내는 것
 
-    public ReadyPanel(AppleGameClient appleGameClient,Socket clientSocket, String myName, Vector<ClientInfo> clientInfos, Vector<ImageIcon> icons) throws IOException {
+    public ReadyPanel(Socket clientSocket, String myName, Vector<ClientInfo> clientInfos, Vector<ImageIcon> icons) throws IOException {
 
         setLayout(null);
-        this.appleGameClient = appleGameClient;
         this.clientSocket = clientSocket;
         this.myName = myName;
         this.clientInfos = clientInfos;
@@ -102,8 +102,37 @@ public class ReadyPanel extends JPanel {
 
             }
         });
-        readyBtn.setBounds(680,580,300,50);
+        readyBtn.setBounds(680,560,300,50);
         add(readyBtn);
+
+        ImageIcon backIcon = new ImageIcon("image/back.png");
+        JButton backLoginBtn = new JButton(backIcon);
+        backLoginBtn.setBounds(950,625,backLoginBtn.getIcon().getIconWidth(),backLoginBtn.getIcon().getIconHeight());
+        backLoginBtn.setBorder(new EmptyBorder(0, 0, 0, 0)); // 빈 Border로 설정
+        add(backLoginBtn);
+
+        backLoginBtn.addActionListener(new ActionListener() { //로그인 화면으로 돌아가는 버튼을 눌렀을 경우
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String msg = "/substractUser "+myName;
+                try{
+                    dos.writeUTF(msg);
+                }catch (Exception err){
+                    err.printStackTrace();
+                }
+                //화면을 로그인 화면으로 이동
+
+
+            }
+        });
+
+
+        JLabel backLoginLabel = new JLabel("로그인 화면으로 돌아가기");
+        backLoginLabel.setBounds(810,625,200,30);
+        backLoginLabel.setForeground(Color.gray);
+        backLoginLabel.setFont(new Font("Arial", Font.BOLD, 13));
+        add(backLoginLabel);
+
 
         JButton sendBtn = new JButton("전송");
         sendBtn.setOpaque(true);
@@ -177,7 +206,7 @@ public class ReadyPanel extends JPanel {
 
             charLabel.setOpaque(true);
             charLabel.setBackground(Color.white);
-            charLabel.setBounds(i * 210 + 100, 150, charLabel.getIcon().getIconWidth(), charLabel.getIcon().getIconHeight());
+            charLabel.setBounds(i * 210 + 100, 140, charLabel.getIcon().getIconWidth(), charLabel.getIcon().getIconHeight());
             add(charLabel);
 
             JLabel isReadyLabel = new JLabel("Ready"); //ready 여부를 나타내는 라벨
@@ -205,7 +234,7 @@ public class ReadyPanel extends JPanel {
                 setReadyLabelColor(isReadyLabel, Color.gray, Color.lightGray);
             }
 
-            isReadyLabel.setBounds(i*210+85,305,180,60);
+            isReadyLabel.setBounds(i*210+85,295,180,60);
             add(isReadyLabel);
             this.repaint();
 
@@ -226,7 +255,7 @@ public class ReadyPanel extends JPanel {
 
     }
 
-    public void addUser(String name,int charIndex){
+    public void addUser(String name,int charIndex){ //유저를 추가하는 함수
         if(!name.equals(myName)) {
             System.out.println("if문으로 들어옴");
             clientInfos.add(new ClientInfo(name, 0, charIndex));
@@ -238,6 +267,19 @@ public class ReadyPanel extends JPanel {
         }
     }
 
+    public void substractUser(String name){ //로그인 화면으로 돌아간 사용자를 클라이언트 정보 벡터에서 삭제함
+        ClientInfo removeClientInfo = null;
+        for(ClientInfo clientInfo:clientInfos){
+            String clientName = clientInfo.getName();
+            if(clientName.equals(name)){
+                removeClientInfo = clientInfo;
+                break;
+            }
+        }
+        clientInfos.remove(removeClientInfo);
+        drawClientInfos(clientInfos);
+        ReadyPanel.this.repaint();
+    }
     public void readyOn(String name){
         String readyName = name;
         //readyName = stArray[1];
@@ -272,84 +314,6 @@ public class ReadyPanel extends JPanel {
         readyLabel.setText(count);
 
     }
-
-//    class ReceiveMsg extends Thread{ //서버로부터 온 메시지를 수신한다.
-//        JLabel clientLabel;
-//        String readyName;
-//        Vector<ClientInfo> newClientInfo;
-//        @Override
-//        public void run(){
-//            while(!this.interrupted()) {
-//                try {
-//                    String msg = dis.readUTF(); //msg를 가져옴
-//                    msg = msg.trim(); //trim 메소드를 사용하여 앞 뒤의 공백을 제거
-//                    String stArray[] = msg.split(" ");
-////                    System.out.println("들어온 메시지 => "+msg);
-//                    if(msg.startsWith("/chat")){
-//                        String chatMessage = msg.substring("/chat".length()).trim();
-//                        chatTextArea.append(chatMessage+"\n");
-//                        chatTextArea.setCaretPosition(chatTextArea.getText().length());
-//                        //chatTextArea.append(stArray[1] + " " + stArray[2] + "\n");
-//                    }
-//                    else if(msg.startsWith("/addUser")){
-//                        if(!stArray[1].equals(myName)) {
-//                            System.out.println("if문으로 들어옴");
-//                            clientInfos.add(new ClientInfo(stArray[1], 0, Integer.parseInt(stArray[3])));
-//                            newClientInfo = clientInfos;
-//                            System.out.println("stArray[1] = "+stArray[1]);
-//                            System.out.println("stArray[2] = "+stArray[3]);
-//                            drawClientInfos(newClientInfo); //클라이언트 정보를 가지고 있는 부분을 다시 그림
-//                            ReadyPanel.this.repaint();
-//                        }
-//                    }
-//                    else if(msg.startsWith("/readyOn")){
-//                        readyName = stArray[1];
-//                        System.out.println("readyOn으로 받은 메시지 이름 = "+stArray[1]);
-//                        for(int i=0;i<clientInfos.size();i++){
-//                            ClientInfo clientInfo = clientInfos.get(i);
-//                            if(clientInfo.getName().equals(readyName)){
-//                                clientInfo.setIsReady(true);
-//                                System.out.println("true로 변경");
-//                                break;
-//                            }
-//                        }
-//                        removeClientInfoLabel(clientInfoVector);
-//                        drawClientInfos(clientInfos); //새로 업데이트 된 clienInfos를 그림
-//                        ReadyPanel.this.repaint();
-//                    }
-//                    else if(msg.startsWith("/readyOff")){
-//                        readyName = stArray[1];
-//                        for(int i=0;i<clientInfos.size();i++){
-//                            ClientInfo clientInfo = clientInfos.get(i);
-//                            if(clientInfo.getName().equals(readyName)){
-//                                clientInfo.setIsReady(false);
-//                                System.out.println("false로 변경");
-//                                break;
-//                            }
-//                        }
-//                        removeClientInfoLabel(clientInfoVector);
-//                        drawClientInfos(clientInfos);
-//                    }
-//                    else if(msg.startsWith("/allReady")){
-//                        //ReadyPanel.this.setVisible(false);
-//                        System.out.println("/allReady 메시지 받음");
-//                        this.interrupt();
-//                        appleGameClient.makeDiviedScreen(clientInfos);
-//                    }
-//                    else if(msg.startsWith("/count"))
-//                        readyLabel.setText(stArray[1]);
-//                    else if(msg.startsWith("/score")){
-//                        System.out.println("/score 메싲 들어옴");
-//                    }
-//
-//
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//
-//    }
 
 
 
