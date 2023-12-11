@@ -6,7 +6,7 @@ import java.util.Vector;
 public class AppleGameClientInfoPanel extends JPanel {
     Vector<ClientInfo> clientInfos;
     Vector<ImageIcon> icons;
-    Vector<JLabel> clientInfoLabels = new Vector<>();
+    volatile Vector<JLabel> clientInfoLabels = new Vector<>();
     public AppleGameClientInfoPanel(Vector<ClientInfo> clientInfos, Vector<ImageIcon> icons){
         setLayout(null);
         this.clientInfos = clientInfos;
