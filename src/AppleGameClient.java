@@ -1,6 +1,8 @@
 import javax.management.remote.JMXConnectorFactory;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.Socket;
 import java.util.Iterator;
@@ -17,14 +19,15 @@ public class AppleGameClient extends JFrame {
     private DataOutputStream dos;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
-    private Vector<ClientInfo> clientInfos = new Vector<>();
+    private Vector<ClientInfo> clientInfos = new Vector<>(); //클라이언트 정보를 담는 벡터를 생성함
     private Vector<ImageIcon> icons; //사과 캐릭터 배열
 
-    private JSplitPane jSplitPane; //화면 분활
     ReadyPanel readyPanel;
     AppleGamePanel gamePanel;
     AppleGameChatPanel chatPanel;
     AppleGameClientInfoPanel clientInfoPanel;
+    JSplitPane horizontalSplitPane;
+    JSplitPane verticalSplitPane;
 
     public AppleGameClient(String name, int charIndex, Vector<ImageIcon> icons) {
         this.name = name;
@@ -52,8 +55,9 @@ public class AppleGameClient extends JFrame {
             clientInfos = (Vector<ClientInfo>) ois.readObject(); //클라이언트 정보들이 담긴 벡터를 받음
 
             System.out.println("AppleGameClient.java clientInfos = " + clientInfos.size());
-            readyPanel = new ReadyPanel(this, clientSocket, name, clientInfos, icons);
-            setContentPane(readyPanel);
+//            readyPanel = new ReadyPanel(clientSocket, name, clientInfos, icons);
+//            setContentPane(readyPanel);
+            makeReadyScreen(clientInfos); //대기 화면 생성
             ///잠시 게임 화면 테스트를 위해 준비화면
 
 
@@ -68,13 +72,44 @@ public class AppleGameClient extends JFrame {
         receiveMsg.start();
 
     }
+    public String getName(){
+        return this.name;
+    }
+    public Vector<ImageIcon> getIcons(){
+        return this.icons;
+    }
+    public Socket getClientSocket(){
+        return this.clientSocket;
+    }
+    public AppleGamePanel getGamePanel(){
+        return this.gamePanel;
+    }
+    public AppleGameChatPanel getChatPanel(){
+        return this.chatPanel;
+    }
+    public AppleGameClientInfoPanel getClientInfoPanel(){
+        return this.clientInfoPanel;
+    }
+    public void makeReadyScreen(Vector<ClientInfo> clientInfos) throws IOException { //대기화면을 생성하는 것
+        readyPanel = new ReadyPanel(clientSocket, name, clientInfos, icons);
+        readyPanel.setVisible(true);
+//        this.setContentPane(readyPanel);
+//        this.repaint();
+        if(horizontalSplitPane!=null && verticalSplitPane!=null) {
+            getContentPane().remove(horizontalSplitPane);
+            getContentPane().remove(verticalSplitPane);
+        }
+        getContentPane().add(readyPanel); // newComponent는 적절한 컴포넌트로 대체해야 합니다.
+        revalidate();
+        repaint();
+    }
 
     public void makeDiviedScreen(Vector<ClientInfo> clientInfos) { //새로 업데이트된 클라이언트의 정보를 받게 됨
 
         //ReadyPanel.ReceiveMsg.interrupted();
 
-        JSplitPane horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        JSplitPane verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
         ImageIcon appleIcon = icons.get(charIndex);
 
@@ -130,7 +165,16 @@ public class AppleGameClient extends JFrame {
                     else if (msg.startsWith("/addUser")) {
                         readyPanel.addUser(stArray[1], Integer.parseInt(stArray[3]));
 
-                    } else if (msg.startsWith("/readyOn")) {
+                    }
+                    else if(msg.startsWith("/substractUser")){
+                        readyPanel.substractUser(stArray[1]); //이름을 보냄
+                        //화면을 로그인 화면으로 이동
+                        interrupt();
+                        break;
+
+
+                    }
+                    else if (msg.startsWith("/readyOn")) {
                         readyPanel.readyOn(stArray[1]);
 
                     } else if (msg.startsWith("/readyOff")) {
@@ -177,33 +221,13 @@ public class AppleGameClient extends JFrame {
 
 
                         Vector<ClientInfo> updateClientInfos = clientInfoPanel.getClientInfos();
-                        GameOverPanel gameOverPanel = new GameOverPanel(updateClientInfos);
+                        GameOverPanel gameOverPanel = new GameOverPanel(AppleGameClient.this,updateClientInfos);
 
                         JDialog gameOverDialog = new JDialog(AppleGameClient.this, "Game Over", Dialog.ModalityType.APPLICATION_MODAL);
                         gameOverDialog.setContentPane(gameOverPanel);
                         gameOverDialog.setSize(500,500);
                         gameOverDialog.setLocationRelativeTo(AppleGameClient.this);
                         gameOverDialog.setVisible(true);
-
-
-
-////                        grayDialog.setBackground(grayColor);
-////                        grayDialog.setBounds(0,0,AppleGameClient.this.getWidth(),AppleGameClient.this.getHeight());
-////                        AppleGameClient.this.add(grayDialog);
-////                        JPanel grayPanel = new JPanel();
-//                        GrayPanel grayPanel = new GrayPanel();
-//                        //grayPanel.setOpaque(false);
-//                       // grayPanel.setBackground(grayColor);
-//                       // gameOverDialog.setUndecorated(true);  // 다이얼로그의 장식을 제거하여 대화 상자처럼 만듭니다.
-//                        gameOverDialog.setContentPane(grayPanel);
-//                        gameOverDialog.setSize(AppleGameClient.this.getSize());
-//                        gameOverDialog.setLocationRelativeTo(AppleGameClient.this);
-//                        gameOverDialog.setVisible(true);
-
-
-
-
-
                     }
 
 
@@ -211,6 +235,10 @@ public class AppleGameClient extends JFrame {
                     e.printStackTrace();
                 }
             }
+            //로그인 화면으로 이동
+
+            AppleGameClientMain appleGameClientMain = new AppleGameClientMain();
+            AppleGameClient.this.dispose();
         }
     }
 }
