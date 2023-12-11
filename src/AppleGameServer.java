@@ -17,7 +17,7 @@ public class AppleGameServer {
     private ServerSocket serverSocket;
     private Vector<ClientService> clientServices = new Vector<>(); //클라이언트와의 연결 정보를 가지고 있는 벡터
 
-    private Vector<ClientInfo> clientInfos = new Vector<>(); //클라이언트스 정보 벡터
+    volatile private Vector<ClientInfo> clientInfos = new Vector<>(); //클라이언트스 정보 벡터
     private boolean allReady = false;
     public AppleGameServer(){
         try{
@@ -147,8 +147,8 @@ public class AppleGameServer {
 //        }
 //    }
 
-    public void removeClientService(ClientService removeClientService){
-
+    synchronized public void removeClientService(ClientService removeClientService){
+        clientServices.remove(removeClientService);
     }
 
     class ClientService extends Thread{
@@ -163,6 +163,8 @@ public class AppleGameServer {
         int readyNum;
         ClientService removeClientService; //삭제할 클라이언트-서버 연결 스레드
         boolean stop = false;
+        volatile int count;
+        volatile int startCount;
 
         public ClientService(String name,Socket clientSocket){
             this.name = name;
@@ -179,7 +181,7 @@ public class AppleGameServer {
                 e.printStackTrace();
             }
         }
-        public void setStopTrue(){
+        synchronized public void setStopTrue(){
             this.stop = true;
         }
 
@@ -202,22 +204,29 @@ public class AppleGameServer {
                         writeStAll(msg+"\n");
                     }
                     else if(msg.startsWith("/readyOn")){
-                        int count = 0;
+                        System.out.println("readyOn 메시지 받음");
+                        count = 0;
+                        for(ClientInfo clientInfo:clientInfos){
+                            System.out.println("서버에서 clientInfo의 ready 여부 => "+clientInfo.getIsReady());
+                        }
                        // isready = true; //ready 상태를 true로 설정
                         //서버쪽에서 클라이언트 정보를 변경해야함
-                        for(ClientInfo clientInfo : clientInfos){
+                        for(ClientInfo clientInfo : clientInfos){ //서버쪽 정보 벡터 변경
                             if(clientInfo.getName().equals(stArray[1])){
                                 clientInfo.setIsReady(true);
                             }
                         }
                         for(ClientInfo clientInfo:clientInfos){
-                            if(clientInfo.getIsReady())
+                            if(clientInfo.getIsReady()) {
                                 count++;
+                            }
                         }
-                        writeStAll(msg+"\n");
+                        System.out.println("서버쪽에서의 count = > "+count);
+                        writeStAll(msg+"\n"); //클라이언트 쪽에서 메시지를 받으면 클라이언트 쪽의 ready 여부가 변경된다.
                         sleep(100);
-                        if(count == 1){ //만약 모두가 ready라면 /allReady 라는 메시지를 보낸다. ///
-                            int startCount = 0;
+
+                        if(count == 4){ //만약 모두가 ready라면 /allReady 라는 메시지를 보낸다. ///
+                            startCount = 5; //startCount 뒤에 게임이 시작되는 것임!
                             while(true){
                                 System.out.println("startCount = "+startCount);
                                 if(startCount==0)
@@ -226,7 +235,11 @@ public class AppleGameServer {
                                 startCount--; //count가 줄어드는 걸 화면에 나타내도록 하기!!!
                                 sleep(500);
                             }
-                            writeStAll("/allReady");
+                            writeStAll("/allReady"); //게임 시작
+
+                            for(ClientInfo clientInfo:clientInfos){ //다시 모두 게임 레디 초기화를 시킴
+                                clientInfo.setIsReady(false);
+                            }
                         }
                     }
                     else if(msg.startsWith("/readyOff")){
@@ -237,9 +250,9 @@ public class AppleGameServer {
                         }
                         writeStAll(msg+"\n");
                     }
-                    else if(msg.startsWith("/gameOver")){
-                        writeStAll(msg); //게임이 오버되었다는 메시지를 보냄
-                    }
+//                    else if(msg.startsWith("/gameOver")){
+//                        writeStAll(msg); //게임이 오버되었다는 메시지를 보냄
+//                    }
                     else if(msg.startsWith("/substractUser")){ //사용자가 나갔다는 메시지를 받았을 경우
                         writeStAll(msg);
                         //클라이언트 정보 벡터에서 해당 정보 삭제
