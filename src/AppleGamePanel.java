@@ -11,10 +11,10 @@ import java.util.Random;
 import java.util.Vector;
 
 public class AppleGamePanel extends JPanel {
-//    int second = 120;
-    int second = 5;
-//    int timerWidth = 360;
-    int timerWidth = 5;
+    int second = 120;
+//    int second = 5;
+    int timerWidth = 360;
+//    int timerWidth = 5;
     int timerHeight = 30;
     JLabel timer;
     Random random = new Random();
@@ -34,12 +34,14 @@ public class AppleGamePanel extends JPanel {
     DataOutputStream dos;
     int score = 0;
     JLabel scoreMark; //화면 상에 점수를 나타내는 레이블
+    AppleGameClient appleGameClient;
 
 
 
     DragActionListener dragActionListener = new DragActionListener();
-    public AppleGamePanel(String name,Socket clientSocket,ImageIcon appleIcon) {
+    public AppleGamePanel(String name,Socket clientSocket,ImageIcon appleIcon,AppleGameClient appleGameClient) {
         setLayout(null);
+        this.appleGameClient = appleGameClient;
         this.name = name;
         this.clientSocket = clientSocket;
         this.appleIcon = appleIcon;
@@ -267,8 +269,9 @@ public class AppleGamePanel extends JPanel {
             while(true){
                 if(second > 0){
                     second--;
-//                    timerWidth-=4;
-                    timerWidth-=1;
+                    timerWidth-=3;
+//                    timerWidth-=1;
+                    System.out.println("남은 시간 => "+second);
                     timer.setBounds(90,10,timerWidth,timerHeight);
                     AppleGamePanel.this.repaint();
                     try {
@@ -277,16 +280,13 @@ public class AppleGamePanel extends JPanel {
                         throw new RuntimeException(e);
                     }
                 }
-                else{//timer 완료
-                    try {
-                        String msg = "/gameOver";
-                        dos.writeUTF(msg); //게임 종료 메시지를 보냄
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
+                else {//timer 완료
                     break;
                 }
             }
+            System.out.println("goToReady true로 변경함");
+            appleGameClient.setGoToReady(true);
+
         }
     }
 
