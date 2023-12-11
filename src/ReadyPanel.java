@@ -8,10 +8,10 @@ import java.net.Socket;
 import java.util.Vector;
 
 public class ReadyPanel extends JPanel {
-    Vector<ClientInfo> clientInfos = new Vector<>();
+    volatile Vector<ClientInfo> clientInfos = new Vector<>();
     Vector<ImageIcon> icons = new Vector<>();
     Vector<JLabel> readyVector = new Vector<>(); //레디여부를 나타내는 벡터들
-    Vector<JLabel> clientInfoVector = new Vector<>(); //클라이언트 정보를 가진 라벨들을 담은 벡터
+    volatile Vector<JLabel> clientInfoVector = new Vector<>(); //클라이언트 정보를 가진 라벨들을 담은 벡터
    // private boolean isReady = false; //레디 여부
     JLabel isReadyLabel;
     JLabel myIsReadyLabel;
@@ -77,6 +77,7 @@ public class ReadyPanel extends JPanel {
         add(inputChat);
 
         JButton readyBtn = new JButton("Ready");
+        readyBtn.requestFocus();
         readyBtn.setOpaque(true);
         readyBtn.setBorderPainted(false);
         readyBtn.setFont(new Font("Arial", Font.BOLD, 35));
@@ -98,6 +99,9 @@ public class ReadyPanel extends JPanel {
                     myIsready = !myIsready;
                 }catch (Exception err){
                     err.printStackTrace();
+                }
+                for(ClientInfo clientInfo:clientInfos){
+                    System.out.println("클라이언트 ready여부-> "+clientInfo.getIsReady());
                 }
 
             }
@@ -143,10 +147,11 @@ public class ReadyPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try{
-
-                    dos.writeUTF("/readyChat < "+myName+" > "+inputChat.getText());
-                    System.out.println("클라이언트 입력 메시지 ="+inputChat.getText());
-                    inputChat.setText("");
+                    if(!inputChat.getText().equals("")) {
+                        dos.writeUTF("/readyChat < " + myName + " > " + inputChat.getText());
+                        System.out.println("클라이언트 입력 메시지 =" + inputChat.getText());
+                        inputChat.setText("");
+                    }
 
                 }catch (Exception err){
                     err.printStackTrace();
@@ -162,13 +167,19 @@ public class ReadyPanel extends JPanel {
 
 
     }
+    public void setClientInfos(Vector<ClientInfo> clientInfos){
+        this.clientInfos = clientInfos;
+    }
 
+    public Vector<JLabel> getRemoveClientInfos(){
+        return this.clientInfoVector;
+    }
 
     public void appendTextArea(String msg){
         chatTextArea.append(msg);
         chatTextArea.setCaretPosition(chatTextArea.getText().length());
     }
-    public void drawClientInfos(Vector<ClientInfo> clientInfos){ //클라이언트들의 정보를 그리는 곳
+    synchronized public void drawClientInfos(Vector<ClientInfo> clientInfos){ //클라이언트들의 정보를 그리는 곳
         System.out.println("매개변수로 들어온 clientInfos size");
         System.out.println(clientInfos.size());
 
@@ -237,6 +248,7 @@ public class ReadyPanel extends JPanel {
             isReadyLabel.setBounds(i*210+85,295,180,60);
             add(isReadyLabel);
             this.repaint();
+            System.out.println("readyPanel draw 함수 완료");
 
 
         }
@@ -247,7 +259,7 @@ public class ReadyPanel extends JPanel {
         readyLabel.setForeground(forgroundColor);
     }
 
-    public void removeClientInfoLabel(Vector<JLabel> clientInfoVector){
+    synchronized public void removeClientInfoLabel(Vector<JLabel> clientInfoVector){
         for(JLabel clientIoLabel : clientInfoVector){ //클라이언트 관련 라벨을 다 삭제함
             ReadyPanel.this.remove(clientIoLabel);
         }
@@ -255,32 +267,36 @@ public class ReadyPanel extends JPanel {
 
     }
 
-    public void addUser(String name,int charIndex){ //유저를 추가하는 함수
+    synchronized public void addUser(String name,int charIndex){ //유저를 추가하는 함수
         if(!name.equals(myName)) {
             System.out.println("if문으로 들어옴");
             clientInfos.add(new ClientInfo(name, 0, charIndex));
            // newClientInfo = clientInfos;
            // System.out.println("stArray[1] = "+stArray[1]);
            // System.out.println("stArray[2] = "+stArray[3]);
+            removeClientInfoLabel(clientInfoVector);
             drawClientInfos(clientInfos); //클라이언트 정보를 가지고 있는 부분을 다시 그림
             ReadyPanel.this.repaint();
         }
     }
 
-    public void substractUser(String name){ //로그인 화면으로 돌아간 사용자를 클라이언트 정보 벡터에서 삭제함
+    synchronized public void substractUser(String name){ //로그인 화면으로 돌아간 사용자를 클라이언트 정보 벡터에서 삭제함
         ClientInfo removeClientInfo = null;
         for(ClientInfo clientInfo:clientInfos){
             String clientName = clientInfo.getName();
             if(clientName.equals(name)){
                 removeClientInfo = clientInfo;
+                System.out.println("지울 클라이언트 정보 찾음");
                 break;
             }
         }
         clientInfos.remove(removeClientInfo);
+        removeClientInfoLabel(clientInfoVector);
         drawClientInfos(clientInfos);
         ReadyPanel.this.repaint();
+        appendTextArea("< "+name+" >님이 퇴장하셨습니다.");
     }
-    public void readyOn(String name){
+    synchronized public void readyOn(String name){
         String readyName = name;
         //readyName = stArray[1];
        // System.out.println("readyOn으로 받은 메시지 이름 = "+stArray[1]);
@@ -296,7 +312,7 @@ public class ReadyPanel extends JPanel {
         drawClientInfos(clientInfos); //새로 업데이트 된 clienInfos를 그림
         ReadyPanel.this.repaint();
     }
-    public void readOff(String name){
+    synchronized public void readOff(String name){
         String readyName = name;
         for(int i=0;i<clientInfos.size();i++){
             ClientInfo clientInfo = clientInfos.get(i);
