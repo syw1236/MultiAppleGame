@@ -75,7 +75,7 @@ public class AppleGameServer {
 
                     clientInfos.add(new ClientInfo(name,0,charIndex));//클라이언트 정보를 통해 객체를 생성하고 배열에 넣음
 
-                    ClientService clientService = new ClientService(clientSocket); //클라이언트-서버 통신 스레드 생성
+                    ClientService clientService = new ClientService(name,clientSocket); //클라이언트-서버 통신 스레드 생성
                     clientServices.add(clientService); //클라이언트 연결 스레드 벡터에 추가
                     clientService.start(); //스레드 시작
 
@@ -147,18 +147,8 @@ public class AppleGameServer {
 //        }
 //    }
 
-    class Timer extends Thread{
-        int count = 5;
-        @Override
-        public void run(){
-            if(count>0) {
-                System.out.println("count = "+count);
-                count--;
-                allReady = true;
+    public void removeClientService(ClientService removeClientService){
 
-            }
-
-        }
     }
 
     class ClientService extends Thread{
@@ -168,12 +158,14 @@ public class AppleGameServer {
         DataInputStream dis;
         DataOutputStream dos;
         ObjectOutputStream oos;
+        String name;
        // boolean isready;
         int readyNum;
+        ClientService removeClientService; //삭제할 클라이언트-서버 연결 스레드
+        boolean stop = false;
 
-
-
-        public ClientService(Socket clientSocket){
+        public ClientService(String name,Socket clientSocket){
+            this.name = name;
             this.clientSocket = clientSocket;
             try {
                 is = clientSocket.getInputStream();
@@ -187,10 +179,13 @@ public class AppleGameServer {
                 e.printStackTrace();
             }
         }
+        public void setStopTrue(){
+            this.stop = true;
+        }
 
         @Override
         public void run(){
-            while(true) {
+            while(!stop) {
                 try {
                     String msg = dis.readUTF(); //msg를 가져옴
 
@@ -245,6 +240,33 @@ public class AppleGameServer {
                     else if(msg.startsWith("/gameOver")){
                         writeStAll(msg); //게임이 오버되었다는 메시지를 보냄
                     }
+                    else if(msg.startsWith("/substractUser")){ //사용자가 나갔다는 메시지를 받았을 경우
+                        writeStAll(msg);
+                        //클라이언트 정보 벡터에서 해당 정보 삭제
+                        ClientInfo removeClientInfo = null;
+                        for(ClientInfo clientInfo:clientInfos){
+                            String clientName = clientInfo.getName();
+                            if(clientName.equals(stArray[1])){
+                                removeClientInfo = clientInfo;
+                                break;
+                            }
+                        }
+                        clientInfos.remove(removeClientInfo); //클라이언트 정보 벡터에서 삭제
+
+                        //클라이언트-서버 연결 삭제
+                        removeClientService = null;
+                        for(ClientService clientService:clientServices){
+                            String name = clientService.getName();
+                            if(name.equals(stArray[1])){
+                                removeClientService = clientService;
+                                break;
+                            }
+
+                        }
+                        removeClientService(removeClientService); // 해당 스레드 삭제하는 함수 호출
+                        //client와 통신하는 스레드에서도 삭제해야함
+                        setStopTrue();
+                    }
 
                 } catch (Exception e) {
                     try{
@@ -257,7 +279,6 @@ public class AppleGameServer {
 
             }
         }
-
         public void writeObjectOne(Vector<ClientInfo> clientInfos){ //클라이언트에게 객체를 보내는 함수
             try{
                 oos.writeObject(clientInfos);
