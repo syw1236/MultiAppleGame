@@ -150,7 +150,7 @@ public class AppleGameClient extends JFrame {
 
     }
 
-    public synchronized void goToReady(Vector<ClientInfo> clientInfos) throws IOException {
+    public synchronized void goToReady(Vector<ClientInfo> clientInfos) throws IOException { //ready 화면으로 변경하는 함수
 //        this.clientInfos = resetClientInfo();
         this.clientInfos = clientInfos;
 //        makeReadyScreen(clientInfos);
@@ -159,6 +159,8 @@ public class AppleGameClient extends JFrame {
         readyPanel.removeClientInfoLabel(readyPanel.getRemoveClientInfos());
         readyPanel.drawClientInfos(clientInfos);
         setContentPane(readyPanel);
+        readyPanel.countMark("모두 Ready하면 게임이 시작됩니다."); //다시 모두 ready하면 게임이 시작된다는 문구를 표시함
+
         this.repaint();
 //        setGoToReady(false);
     }
@@ -171,7 +173,7 @@ public class AppleGameClient extends JFrame {
         return  clientInfos;
     }
 
-    public void gameOverScreen(){
+    public void gameOverScreen(){ //게임 오버 화면을 그리는 함수
         System.out.println("게임 오버 메시지 받음 클라이언트 이름 -> "+name);
         Color grayColor = new Color(0, 0, 0, 128);
         JPanel gameGrayPanel = new JPanel();
@@ -248,9 +250,6 @@ public class AppleGameClient extends JFrame {
 //        }
 //    }
     class ReceiveMsg extends Thread { //서버로부터 온 메시지를 수신한다.
-        JLabel clientLabel;
-        String readyName;
-        Vector<ClientInfo> newClientInfo;
 
         @Override
         public void run() {
@@ -337,40 +336,15 @@ public class AppleGameClient extends JFrame {
                             gameOverDialog.setLocationRelativeTo(AppleGameClient.this);
                             gameOverDialog.setVisible(true);
                         }
-
-
-
-
-
-
-
-//                        gameOverPanel.setHomeButtonListener(new ActionListener() {
-//                            @Override
-//                            public void actionPerformed(ActionEvent e) {
-//                                try {
-//                                    // gameOver에서 ready 화면으로의 전환 처리
-//                                    gameOverDialog.dispose();
-//                                    goToReady(clientInfos);
-//                                } catch (IOException ex) {
-//                                    throw new RuntimeException(ex);
-//                                }
-//                            }
-//                        });
                     }
-//                    if(goToLogin){
-//                        System.out.println("goToLogin is true");
-//                        Vector<ClientInfo> resetClientInfos = gameOverPanel.getResetClientInfos();
-//                        goToReady(resetClientInfos); //ready 화면으로 이동
-//                        goToLogin = false;
-//                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
             //로그인 화면으로 이동
 
-            AppleGameClientMain appleGameClientMain = new AppleGameClientMain();
-            AppleGameClient.this.dispose();
+            AppleGameClientMain appleGameClientMain = new AppleGameClientMain(); //로그인 화면으로 이동함
+            AppleGameClient.this.dispose(); //사용자가 있던 화면은 사라지게함
         }
     }
 }
