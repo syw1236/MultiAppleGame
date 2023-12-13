@@ -225,7 +225,7 @@ public class AppleGameServer {
                         writeStAll(msg+"\n"); //클라이언트 쪽에서 메시지를 받으면 클라이언트 쪽의 ready 여부가 변경된다.
                         sleep(100);
 
-                        if(count == 4){ //만약 모두가 ready라면 /allReady 라는 메시지를 보낸다. ///
+                        if(count == 2){ //만약 모두가 ready라면 /allReady 라는 메시지를 보낸다. ///
                             startCount = 5; //startCount 뒤에 게임이 시작되는 것임!
                             while(true){
                                 System.out.println("startCount = "+startCount);
@@ -235,6 +235,8 @@ public class AppleGameServer {
                                 startCount--; //count가 줄어드는 걸 화면에 나타내도록 하기!!!
                                 sleep(500);
                             }
+                            writeStAll("/count "+"게임시작");
+
                             writeStAll("/allReady"); //게임 시작
 
                             for(ClientInfo clientInfo:clientInfos){ //다시 모두 게임 레디 초기화를 시킴
