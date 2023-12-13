@@ -1,3 +1,4 @@
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -73,9 +74,9 @@ public class AppleGameClient extends JFrame {
 
         receiveMsg = new ReceiveMsg();
         receiveMsg.start();
-
-        GoToReadyThread goToReadyThread = new GoToReadyThread();
-        goToReadyThread.start();
+//
+//        GoToReadyThread goToReadyThread = new GoToReadyThread();
+//        goToReadyThread.start();
 
 //        GoToLoginThread goToLoginThread = new GoToLoginThread();
 //        goToLoginThread.start();
@@ -116,7 +117,7 @@ public class AppleGameClient extends JFrame {
 //        }
     }
 
-    public void makeDiviedScreen(Vector<ClientInfo> clientInfos) { //새로 업데이트된 클라이언트의 정보를 받게 됨
+    public void makeDiviedScreen(Vector<ClientInfo> clientInfos) throws UnsupportedAudioFileException, IOException { //새로 업데이트된 클라이언트의 정보를 받게 됨
 
         //ReadyPanel.ReceiveMsg.interrupted();
 
@@ -170,49 +171,82 @@ public class AppleGameClient extends JFrame {
         return  clientInfos;
     }
 
-    class GoToReadyThread extends Thread{
-//        int count = 0;
-        @Override
-        public void run(){
-            while(true){
-                if(goToReady){ //true면
-                    System.out.println("게임 오버 메시지 받음 클라이언트 이름 -> "+name);
-                    Color grayColor = new Color(0, 0, 0, 128);
-                    JPanel gameGrayPanel = new JPanel();
-                    gameGrayPanel.setBackground(grayColor);
-                    gameGrayPanel.setBounds(0,0,gamePanel.getWidth(),gamePanel.getHeight());
-                    gamePanel.add(gameGrayPanel,0);
-                    gamePanel.repaint();
+    public void gameOverScreen(){
+        System.out.println("게임 오버 메시지 받음 클라이언트 이름 -> "+name);
+        Color grayColor = new Color(0, 0, 0, 128);
+        JPanel gameGrayPanel = new JPanel();
+        gameGrayPanel.setBackground(grayColor);
+        gameGrayPanel.setBounds(0,0,gamePanel.getWidth(),gamePanel.getHeight());
+        gamePanel.add(gameGrayPanel,0);
+        gamePanel.repaint();
 
-                    JPanel clientGrayPanel = new JPanel();
-                    clientGrayPanel.setBackground(grayColor);
-                    clientGrayPanel.setBounds(0,0,clientInfoPanel.getWidth(),clientInfoPanel.getHeight());
-                    clientInfoPanel.add(clientGrayPanel,0);
-                    clientInfoPanel.repaint();
+        JPanel clientGrayPanel = new JPanel();
+        clientGrayPanel.setBackground(grayColor);
+        clientGrayPanel.setBounds(0,0,clientInfoPanel.getWidth(),clientInfoPanel.getHeight());
+        clientInfoPanel.add(clientGrayPanel,0);
+        clientInfoPanel.repaint();
 
-                    JPanel chatGrayPanel = new JPanel();
-                    chatGrayPanel.setBackground(grayColor);
-                    chatGrayPanel.setBounds(0,0,chatPanel.getWidth(),chatPanel.getHeight());
-                    chatPanel.add(chatGrayPanel,0);
-                    chatPanel.repaint();
+        JPanel chatGrayPanel = new JPanel();
+        chatGrayPanel.setBackground(grayColor);
+        chatGrayPanel.setBounds(0,0,chatPanel.getWidth(),chatPanel.getHeight());
+        chatPanel.add(chatGrayPanel,0);
+        chatPanel.repaint();
 //
-                    Vector<ClientInfo> updateClientInfos = clientInfoPanel.getClientInfos();
+        Vector<ClientInfo> updateClientInfos = clientInfoPanel.getClientInfos();
 
-                    //if(gameOverDialog == null) {
-                        gameOverDialog = new JDialog(AppleGameClient.this, "Game Over", Dialog.ModalityType.APPLICATION_MODAL);
-                        gameOverPanel = new GameOverPanel(AppleGameClient.this, updateClientInfos, gameOverDialog);
+        //if(gameOverDialog == null) {
+        gameOverDialog = new JDialog(AppleGameClient.this, "Game Over", Dialog.ModalityType.APPLICATION_MODAL);
+        gameOverPanel = new GameOverPanel(AppleGameClient.this, updateClientInfos, gameOverDialog);
 
-                        gameOverDialog.setContentPane(gameOverPanel);
-                        gameOverDialog.setSize(500, 500);
-                        gameOverDialog.setLocationRelativeTo(AppleGameClient.this);
-                        gameOverDialog.setVisible(true);
-                   // }
-                   setGoToReady(false);
-                }
-            }
-//            setGoToReady(false);
-        }
+        gameOverDialog.setContentPane(gameOverPanel);
+        gameOverDialog.setSize(500, 500);
+        gameOverDialog.setLocationRelativeTo(AppleGameClient.this);
+        gameOverDialog.setVisible(true);
     }
+
+//    class GoToReadyThread extends Thread{ //게임 오버되면 전체 패널의 색상이 회색으로 달라지고 순위를 다이얼로그를 통해 보여준다.
+////        int count = 0;
+//        @Override
+//        public void run(){
+//            while(true){
+//                if(goToReady){ //true면
+//                    System.out.println("게임 오버 메시지 받음 클라이언트 이름 -> "+name);
+//                    Color grayColor = new Color(0, 0, 0, 128);
+//                    JPanel gameGrayPanel = new JPanel();
+//                    gameGrayPanel.setBackground(grayColor);
+//                    gameGrayPanel.setBounds(0,0,gamePanel.getWidth(),gamePanel.getHeight());
+//                    gamePanel.add(gameGrayPanel,0);
+//                    gamePanel.repaint();
+//
+//                    JPanel clientGrayPanel = new JPanel();
+//                    clientGrayPanel.setBackground(grayColor);
+//                    clientGrayPanel.setBounds(0,0,clientInfoPanel.getWidth(),clientInfoPanel.getHeight());
+//                    clientInfoPanel.add(clientGrayPanel,0);
+//                    clientInfoPanel.repaint();
+//
+//                    JPanel chatGrayPanel = new JPanel();
+//                    chatGrayPanel.setBackground(grayColor);
+//                    chatGrayPanel.setBounds(0,0,chatPanel.getWidth(),chatPanel.getHeight());
+//                    chatPanel.add(chatGrayPanel,0);
+//                    chatPanel.repaint();
+////
+//                    Vector<ClientInfo> updateClientInfos = clientInfoPanel.getClientInfos();
+//
+//                    //if(gameOverDialog == null) {
+//                        gameOverDialog = new JDialog(AppleGameClient.this, "Game Over", Dialog.ModalityType.APPLICATION_MODAL);
+//                        gameOverPanel = new GameOverPanel(AppleGameClient.this, updateClientInfos, gameOverDialog);
+//
+//                        gameOverDialog.setContentPane(gameOverPanel);
+//                        gameOverDialog.setSize(500, 500);
+//                        gameOverDialog.setLocationRelativeTo(AppleGameClient.this);
+//                        gameOverDialog.setVisible(true);
+//                   // }
+//                   setGoToReady(false);
+//                }
+//            }
+////            setGoToReady(false);
+//        }
+//    }
     class ReceiveMsg extends Thread { //서버로부터 온 메시지를 수신한다.
         JLabel clientLabel;
         String readyName;
