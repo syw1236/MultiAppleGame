@@ -6,14 +6,13 @@ import java.awt.event.MouseEvent;
 public class DrawPanel extends JPanel {
     Point startPoint;
     Point endPoint;
-   // DragActionListener dragActionListener = new DragActionListener();
 
     public DrawPanel() {
         setOpaque(false);
         setVisible(true);
-//
-//        addMouseListener(dragActionListener);
-//        addMouseMotionListener(dragActionListener);
+
+        requestFocus();
+
     }
 
     public void setStartP(Point startPoint) {
@@ -36,14 +35,11 @@ public class DrawPanel extends JPanel {
             int width = Math.abs(endPoint.x - startPoint.x);
             int height = Math.abs(endPoint.y - startPoint.y);
 
-//            g.setColor(Color.BLUE);
-//            g.drawRect(x, y, width, height);
             // 테두리 그리기
             Graphics2D g2d = (Graphics2D) g;
             g2d.setColor(new Color(102, 102, 204, 100)); // 채워진 색상 설정 (오렌지, 반투명)
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f)); // 투명도 설정
             g2d.fillRect(x, y, width, height); // 사각형 채우기
-           // g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f)); // 투명도 원복
             // 채우기
 
         }
