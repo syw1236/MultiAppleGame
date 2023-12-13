@@ -50,6 +50,8 @@ public class AppleGamePanel extends JPanel {
     DragActionListener dragActionListener = new DragActionListener();
     public AppleGamePanel(String name,Socket clientSocket,ImageIcon appleIcon,AppleGameClient appleGameClient) throws UnsupportedAudioFileException, IOException {
         setLayout(null);
+
+
         this.appleGameClient = appleGameClient;
         this.name = name;
         this.clientSocket = clientSocket;
@@ -121,6 +123,8 @@ public class AppleGamePanel extends JPanel {
 
         audioThread = new AudioThread();
         audioThread.start();// 노래 스레드 시작
+
+
 
 
 
