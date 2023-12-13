@@ -74,6 +74,7 @@ public class ReadyPanel extends JPanel {
         JTextField inputChat = new JTextField();
         inputChat.setFont(new Font("Arial", Font.PLAIN, 17));
         inputChat.setBounds(50,600,530,50);
+        inputChat.requestFocus();
         add(inputChat);
 
         JButton readyBtn = new JButton("Ready");
