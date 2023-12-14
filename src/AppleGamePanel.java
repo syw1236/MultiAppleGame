@@ -13,9 +13,9 @@ import java.util.Vector;
 
 public class AppleGamePanel extends JPanel {
 //    int second = 120;
-    int second = 20;
+    int second = 90;
 //    int timerWidth = 360;
-    int timerWidth = 5;
+    int timerWidth = 270;
     int timerHeight = 30;
     JLabel timer;
     Random random = new Random();
@@ -107,10 +107,6 @@ public class AppleGamePanel extends JPanel {
         addMouseListener(dragActionListener);
         addMouseMotionListener(dragActionListener);
         try {
-            audioClip = AudioSystem.getClip(); //비어있는 사과 브금 오디오 클립 만들기
-            audioFile = new File(audioPath); //오디오 파일의 경로명
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile); //오디오 파일로부터
-            audioClip.open(audioStream); //재생할 오디오 스트림 열기
 
             itemClip = AudioSystem.getClip(); //비어있는 아이템 브금 오디오 클립 만들기
             itemFile = new File(itemPath); //아이템 오디오 파일의 경로명
@@ -297,13 +293,17 @@ public class AppleGamePanel extends JPanel {
     class AudioThread extends Thread{
         private volatile boolean stop = false; //멈추는 stop 변수
         public AudioThread(){
-            System.out.println("노래 스레드 생성함");
             try {
-
+                audioClip = AudioSystem.getClip(); //비어있는 사과 브금 오디오 클립 만들기
+                audioFile = new File(audioPath); //오디오 파일의 경로명
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile); //오디오 파일로부터
+                audioClip.open(audioStream); //재생할 오디오 스트림 열기
             }catch (Exception e){
                 e.printStackTrace();
             }
+
         }
+
 
         public synchronized void setStop(boolean stop){
             this.stop = stop;
@@ -314,7 +314,22 @@ public class AppleGamePanel extends JPanel {
 //                if(stop)
 //                    break;
                 //System.out.println(name+" audio thread starting");
-                audioClip.start(); //노래 시작
+//                audioClip.start(); //노래 시작
+//                System.out.println("audioClip 길이 -> "+audioClip.getFrameLength());
+//                System.out.println("현재 audioClip 포지션 => "+audioClip.getFramePosition());
+////
+////                if (audioClip.getFramePosition() == audioClip.getFrameLength()) {
+////                    System.out.println("노래가 끝까지 갔습니다. 다시 시작합니다.");
+////                    audioClip.setFramePosition(0); // 재생 위치를 첫 프레임으로 변경
+////                }
+//                if(!audioClip.isRunning()){
+//                    audioClip.setFramePosition(0);
+//                }
+//                if(audioClip.getFramePosition()==audioClip.getFrameLength())
+//                    System.out.println("audio 프레임 끝까지 옴");
+//                    audioClip.setFramePosition(0);
+
+                audioClip.loop(Clip.LOOP_CONTINUOUSLY);
             }
             audioClip.stop();
             System.out.println("끝남");
@@ -332,9 +347,11 @@ public class AppleGamePanel extends JPanel {
             while(true){
                 if(second > 0){
                     second--;
-//                    timerWidth-=3;
-                    timerWidth-=1;
+                    timerWidth-=3;
+//                    timerWidth-=1;
                     System.out.println("남은 시간 => "+second);
+                    System.out.println("남은 너비 => "+timerWidth);
+
                     timer.setBounds(90,10,timerWidth,timerHeight);
                     AppleGamePanel.this.repaint();
                     try {
