@@ -1,3 +1,6 @@
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -28,6 +31,7 @@ public class ReadyPanel extends JPanel {
     JTextArea chatTextArea; //전체 채팅창
 //    AppleGameClient appleGameClient;
     JLabel readyLabel; //전체 화면에 ready를 나타내는 것
+
 
     public ReadyPanel(Socket clientSocket, String myName, Vector<ClientInfo> clientInfos, Vector<ImageIcon> icons) throws IOException {
 
@@ -140,6 +144,7 @@ public class ReadyPanel extends JPanel {
 
 
         JButton sendBtn = new JButton("전송");
+        sendBtn.requestFocus();
         sendBtn.setOpaque(true);
         sendBtn.setForeground(Color.gray);
         sendBtn.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -160,11 +165,10 @@ public class ReadyPanel extends JPanel {
             }
         });
         add(sendBtn);
+        requestFocus();
 
-//        ReceiveMsg receiveMsg = new ReceiveMsg();
-//        receiveMsg.start();
-//        ReceiveObject receiveObject = new ReceiveObject();
-//        receiveObject.start();
+
+
 
 
     }
@@ -295,7 +299,7 @@ public class ReadyPanel extends JPanel {
         removeClientInfoLabel(clientInfoVector);
         drawClientInfos(clientInfos);
         ReadyPanel.this.repaint();
-        appendTextArea("< "+name+" >님이 퇴장하셨습니다.");
+        appendTextArea("< "+name+" >님이 퇴장하셨습니다."+"\n");
     }
     synchronized public void readyOn(String name){
         String readyName = name;
