@@ -1,3 +1,6 @@
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.xml.crypto.Data;
 import java.awt.*;
 import java.io.*;
@@ -19,6 +22,11 @@ public class AppleGameServer {
 
     volatile private Vector<ClientInfo> clientInfos = new Vector<>(); //클라이언트스 정보 벡터
     private boolean allReady = false;
+
+    Clip countClip;
+    File countFile;
+    AudioInputStream countStream;
+    String countPath = "audio/count.wav";
     public AppleGameServer(){
         try{
             serverSocket = new ServerSocket(9999); //서버 소켓 생성
@@ -27,6 +35,16 @@ public class AppleGameServer {
 //            CheckReady checkReady = new CheckReady();
 //            checkReady.start();
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+        try {
+            countClip = AudioSystem.getClip();
+            countFile = new File(countPath);
+            countStream = AudioSystem.getAudioInputStream(countFile);
+            countClip.open(countStream);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -227,13 +245,17 @@ public class AppleGameServer {
 
                         if(count == 2){ //만약 모두가 ready라면 /allReady 라는 메시지를 보낸다. ///
                             startCount = 5; //startCount 뒤에 게임이 시작되는 것임!
+                            countClip.start(); //카운트다운 오디오 시작
+                            countClip.setFramePosition(0); //프레임 초기화 시킴
                             while(true){
                                 System.out.println("startCount = "+startCount);
-                                if(startCount==0)
+
+                                if(startCount==-1)
                                     break;
                                 writeStAll("/count "+startCount);
                                 startCount--; //count가 줄어드는 걸 화면에 나타내도록 하기!!!
-                                sleep(500);
+                                sleep(1000);
+
                             }
                             writeStAll("/count "+"게임시작");
 
