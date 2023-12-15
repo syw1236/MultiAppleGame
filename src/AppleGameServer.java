@@ -24,22 +24,18 @@ public class AppleGameServer {
     volatile private Vector<ClientInfo> clientInfos = new Vector<>(); //클라이언트스 정보 벡터
     private boolean allReady = false;
 
-    Clip countClip;
-    File countFile;
-    AudioInputStream countStream;
-    String countPath = "audio/count.wav";
+    private Clip countClip;
+    private File countFile;
+    private AudioInputStream countStream;
+    private String countPath = "audio/count.wav";
     public AppleGameServer(){
         try{
             serverSocket = new ServerSocket(9999); //서버 소켓 생성
             AcceptServer acceptServer = new AcceptServer(); //클라이언트를 기다리는 스레드 생성
             acceptServer.start(); //스레드 시작
-//            CheckReady checkReady = new CheckReady();
-//            checkReady.start();
-
         }catch (Exception e){
             e.printStackTrace();
         }
-
 
         try {
             countClip = AudioSystem.getClip();
@@ -49,10 +45,7 @@ public class AppleGameServer {
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
-
-
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -66,8 +59,6 @@ public class AppleGameServer {
             }
         });
     }
-
-
 
     class AcceptServer extends Thread{ //새로운 참가자를 accept()하고 userThread를 생성함, 한 번 만들어서 계속 사용하는 스레드
 
@@ -87,14 +78,11 @@ public class AppleGameServer {
                     is = clientSocket.getInputStream();
                     dis = new DataInputStream(is); //받는 스트림
                     dos = new DataOutputStream(out); //보내는 스트림
-//                    oos = new ObjectOutputStream(out); //클라이언트의 outStream
-//                    ois = new ObjectInputStream(is);
 
                     String name = dis.readUTF(); //클라이언트의 이름 받아옴
                     int charIndex = Integer.parseInt(dis.readUTF()); //클라이언트의 캐릭터 인덱스를 받아옴
                     System.out.println("client name " + name);
                     System.out.println("charIndex " + charIndex);
-
 
                     ClientService clientService = new ClientService(name, clientSocket); //클라이언트-서버 통신 스레드 생성
 
@@ -104,14 +92,11 @@ public class AppleGameServer {
 
                         clientService.writeObjectOne(null);
 
-
                         dos.writeUTF("/fullUser "+"현재 4명의 플레이어가 게임을 진행하고 있습니다. 다음 기회에 참여해주세요.");
                     }
                     else{
                         clientServices.add(clientService); //클라이언트 연결 스레드 벡터에 추가
                         clientService.start(); //스레드 시작
-
-                        //oos = new ObjectOutputStream(out);
 
                         clientInfos.add(new ClientInfo(name, 0, charIndex));//클라이언트 정보를 통해 객체를 생성하고 배열에 넣음
 
@@ -124,22 +109,6 @@ public class AppleGameServer {
                         writeStAll(chatmsg);
                     }
 
-
-//                    clientServices.add(clientService); //클라이언트 연결 스레드 벡터에 추가
-//                    clientService.start(); //스레드 시작
-//
-//                       //oos = new ObjectOutputStream(out);
-//
-//                    clientInfos.add(new ClientInfo(name, 0, charIndex));//클라이언트 정보를 통해 객체를 생성하고 배열에 넣음
-//
-//                    clientService.writeObjectOne(clientInfos); //새로운 클라이언트에게 현재까지 있는 클라이언트들이 정보를 전달함
-//
-//                    System.out.println("서버에서 adduer 보내기 전 clientSerive의 사이즈 = " + clientServices.size());
-//                    String addUsermsg = "/addUser " + name + " " + 0 + " " + charIndex;
-//                    writeStAll(addUsermsg); //모든 클라이언트에게 새로 들어온 클라이언트 정보를 전달함
-//                    String chatmsg = "/readyChat " + name + "님이 들어오셨습니다.";
-//                    writeStAll(chatmsg);
-
                 }catch (Exception e){
                     try {
                         dos.close();
@@ -147,33 +116,24 @@ public class AppleGameServer {
                     }catch (Exception err){
                         err.printStackTrace();
                     }
-
-
                 }
-
             }
         }
 
     }
 
-    synchronized public void removeClientService(ClientService removeClientService){
-        clientServices.remove(removeClientService);
-    }
 
     class ClientService extends Thread{
-        Socket clientSocket;
-        InputStream is;
-        OutputStream out;
-        DataInputStream dis;
-        DataOutputStream dos;
-        ObjectOutputStream oos;
-        String name;
-       // boolean isready;
-        int readyNum;
-        ClientService removeClientService; //삭제할 클라이언트-서버 연결 스레드
-        boolean stop = false;
-        volatile int count;
-        volatile int startCount;
+        private Socket clientSocket;
+        private InputStream is;
+        private OutputStream out;
+        private DataInputStream dis;
+        private DataOutputStream dos;
+        private ObjectOutputStream oos;
+        private String name;
+        private boolean stop = false;
+        private volatile int count;
+        private volatile int startCount;
 
         public ClientService(String name,Socket clientSocket){
             this.name = name;
@@ -190,10 +150,6 @@ public class AppleGameServer {
                 e.printStackTrace();
             }
         }
-        synchronized public void setStopTrue(){
-            this.stop = true;
-        }
-
         @Override
         public void run(){
             while(!stop) {
@@ -218,7 +174,6 @@ public class AppleGameServer {
                         for(ClientInfo clientInfo:clientInfos){
                             System.out.println("서버에서 clientInfo의 ready 여부 => "+clientInfo.getIsReady());
                         }
-                       // isready = true; //ready 상태를 true로 설정
                         //서버쪽에서 클라이언트 정보를 변경해야함
                         for(ClientInfo clientInfo : clientInfos){ //서버쪽 정보 벡터 변경
                             if(clientInfo.getName().equals(stArray[1])){
@@ -258,16 +213,13 @@ public class AppleGameServer {
                         }
                     }
                     else if(msg.startsWith("/readyOff")){
-                       // isready = false; //ready 상태를 false로 설정
                         for(ClientInfo clientInfo:clientInfos){
                             if(clientInfo.getName().equals(stArray[1]))
                                 clientInfo.setIsReady(false);
                         }
                         writeStAll(msg+"\n");
                     }
-//                    else if(msg.startsWith("/gameOver")){
-//                        writeStAll(msg); //게임이 오버되었다는 메시지를 보냄
-//                    }
+
                     else if(msg.startsWith("/substractUser")){ //사용자가 나갔다는 메시지를 받았을 경우
                         writeStAll(msg);
                         //클라이언트 정보 벡터에서 해당 정보 삭제
@@ -280,26 +232,10 @@ public class AppleGameServer {
                             }
                         }
                         clientInfos.remove(removeClientInfo); //클라이언트 정보 벡터에서 삭제
-
-                        //클라이언트-서버 연결 삭제
-//                        removeClientService = null;
-//                        for(ClientService clientService:clientServices){
-//                            String name = clientService.getName();
-//                            if(name.equals(stArray[1])){
-//                                removeClientService = clientService;
-//                                break;
-//                            }
-//
-//                        }
-                        //removeClientService(removeClientService); // 해당 스레드 삭제하는 함수 호출
-                        //client와 통신하는 스레드에서도 삭제해야함
-                        //setStopTrue();
                         if(name.equals(stArray[1])) {
                             clientServices.remove(this);
                             break;
                         }
-//                        if(name.equals(removeClientInfo.getName()))
-//                            setStopTrue();
                     }
                     else if(msg.startsWith("/fullUserOut")){
                         removeClientServieces.clear();
@@ -319,34 +255,17 @@ public class AppleGameServer {
         public void writeObjectOne(Vector<ClientInfo> clientInfos){ //클라이언트에게 객체를 보내는 함수
             try{
                 oos.writeObject(clientInfos);
-//                oos.flush();
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
 
-        public void writeStOne(String msg){ //클라이언트에게 메시지 보내는 함수
-            try{
-               dos.writeUTF(msg);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
         public DataOutputStream getDos(){
             return dos;
         }
-//        public boolean getIsReady(){ //ready 여부를 반환하는 것
-//            return isready;
-//        }
 
     }
 
-    public void writeObjectAll(Vector<ClientInfo> clientInfos){ //클라이언트들에게 객체를 보내는 함수
-        for(ClientService clientService : clientServices){
-            clientService.writeObjectOne(clientInfos); //클라이언트에게 객체 정보 전달
-
-        }
-    }
     public void writeStAll(String msg){
         for(ClientService clientService : clientServices){
             DataOutputStream dos = clientService.getDos();
@@ -354,7 +273,6 @@ public class AppleGameServer {
                 try {
 
                     dos.writeUTF(msg);
-                    //System.out.println("client => "+clientService.clientSocket);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -362,4 +280,3 @@ public class AppleGameServer {
         }
     }
 }
-//만일 무두가 ready라면 게임을 시작하도록 해야함
