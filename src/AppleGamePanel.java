@@ -261,8 +261,8 @@ public class AppleGamePanel extends JPanel {
 
 
                 if (count == 10) { //드래그 영역 내의 숫자가 10일 경우
-                    itemClip.start(); //아이템 제거 오디오 재생하기
                     itemClip.setFramePosition(0); //재생 위치를 첫 프레임으로 변경
+                    itemClip.start(); //아이템 제거 오디오 재생하기
                     for (Apple removeApple : removeAppleVector) {
                         AppleGamePanel.this.remove(removeApple);
                         AppleGamePanel.this.repaint();
