@@ -36,10 +36,10 @@ public class AppleGamePanel extends JPanel {
     int score = 0;
     JLabel scoreMark; //화면 상에 점수를 나타내는 레이블
     AppleGameClient appleGameClient;
-    Clip audioClip; //사과 브금 오디오 클립
-    Clip itemClip; //사과 아이템 브금 오디오 클립
-    File audioFile; //게임 브금 파일
-    File itemFile; //사과 아이템 브금 파일
+    volatile Clip audioClip; //사과 브금 오디오 클립
+    volatile Clip itemClip; //사과 아이템 브금 오디오 클립
+    volatile File audioFile; //게임 브금 파일
+    volatile File itemFile; //사과 아이템 브금 파일
     String itemPath = "audio/item.wav";
     String audioPath = "audio/apple.wav";
     AudioThread audioThread;
@@ -203,7 +203,7 @@ public class AppleGamePanel extends JPanel {
             repaint(); // 사각형을 그림
         }
         @Override
-        public void mouseReleased(MouseEvent e){
+        public void mouseReleased(MouseEvent e) {
             endPoint = e.getPoint();
 
             SwingUtilities.convertPointToScreen(endPoint, AppleGamePanel.this);
@@ -212,80 +212,83 @@ public class AppleGamePanel extends JPanel {
             drawPanel.setEndP(endPoint);
             repaint(); // 사각형을 그림
 
-            //그려지는 위치 안에 사과가 몇개인지 먼저 체크하자!
-            int x = Math.min(startPoint.x, endPoint.x);
-            int y = Math.min(startPoint.y, endPoint.y);
-            int width = Math.abs(endPoint.x - startPoint.x);
-            int height = Math.abs(endPoint.y - startPoint.y);
+            if (startPoint != null && endPoint != null) {
+                //그려지는 위치 안에 사과가 몇개인지 먼저 체크하자!
+                int x = Math.min(startPoint.x, endPoint.x);
+                int y = Math.min(startPoint.y, endPoint.y);
+                int width = Math.abs(endPoint.x - startPoint.x);
+                int height = Math.abs(endPoint.y - startPoint.y);
 
-            //int applesInHalfArea = 0; // 드래그 영역 내에 1/2 영역이 포함된 사과 개수 카운트
-            int count = 0;
-            Vector<Apple> removeAppleVector = new Vector<>();//삭제할 사과들을 모아놓는 벡터
+                //int applesInHalfArea = 0; // 드래그 영역 내에 1/2 영역이 포함된 사과 개수 카운트
+                int count = 0;
+                Vector<Apple> removeAppleVector = new Vector<>();//삭제할 사과들을 모아놓는 벡터
 
-            for(Apple apppleLabel:appleLabelVector) {
-                int appleX = apppleLabel.getX();
-                int appleY = apppleLabel.getY();
-                int appleWidth = apppleLabel.getWidth();
-                int appleHeight = apppleLabel.getHeight();
+                for (Apple apppleLabel : appleLabelVector) {
+                    int appleX = apppleLabel.getX();
+                    int appleY = apppleLabel.getY();
+                    int appleWidth = apppleLabel.getWidth();
+                    int appleHeight = apppleLabel.getHeight();
 
-                // startPoint와 endPoint 사이에 드래그한 영역이 있는지 확인
-                if (x + width >= appleX && x <= appleX + appleWidth &&
-                        y + height >= appleY && y <= appleY + appleHeight) {
+                    // startPoint와 endPoint 사이에 드래그한 영역이 있는지 확인
+                    if (x + width >= appleX && x <= appleX + appleWidth &&
+                            y + height >= appleY && y <= appleY + appleHeight) {
 
-                    // 드래그한 영역과 사과의 교집합 영역 계산
-                    int intersectionX = Math.max(x, appleX);
-                    int intersectionY = Math.max(y, appleY);
-                    int intersectionWidth = Math.min(x + width, appleX + appleWidth) - intersectionX;
-                    int intersectionHeight = Math.min(y + height, appleY + appleHeight) - intersectionY;
+                        // 드래그한 영역과 사과의 교집합 영역 계산
+                        int intersectionX = Math.max(x, appleX);
+                        int intersectionY = Math.max(y, appleY);
+                        int intersectionWidth = Math.min(x + width, appleX + appleWidth) - intersectionX;
+                        int intersectionHeight = Math.min(y + height, appleY + appleHeight) - intersectionY;
 
-                    // 교집합 영역이 드래그 영역의 1/2 이상인지 확인
-                    double intersectionArea = intersectionWidth * intersectionHeight;
-                    double appleArea = appleWidth * appleHeight;
+                        // 교집합 영역이 드래그 영역의 1/2 이상인지 확인
+                        double intersectionArea = intersectionWidth * intersectionHeight;
+                        double appleArea = appleWidth * appleHeight;
 
-                    if (intersectionArea >= 0.5 * appleArea) {
-                        // 교집합 영역이 드래그 영역의 1/2 이상인 경우
+                        if (intersectionArea >= 0.5 * appleArea) {
+                            // 교집합 영역이 드래그 영역의 1/2 이상인 경우
 //                        applesInHalfArea++;
-                        int appleCount = apppleLabel.getInt();
-                        count += appleCount;
-                        System.out.println("appleCount = "+appleCount);
-                        System.out.println("count = "+count);
-                        removeAppleVector.add(apppleLabel); //삭제할 벡터에 해당 사과 추가
+                            int appleCount = apppleLabel.getInt();
+                            count += appleCount;
+                            System.out.println("appleCount = " + appleCount);
+                            System.out.println("count = " + count);
+                            removeAppleVector.add(apppleLabel); //삭제할 벡터에 해당 사과 추가
 
-                        // 여기에서 필요한 작업 수행 가능 (예: 해당 사과를 삭제하거나 특정 동작 수행)
-                        // appleLabelVector.remove(apppleLabel);
-                        // repaint();
+                            // 여기에서 필요한 작업 수행 가능 (예: 해당 사과를 삭제하거나 특정 동작 수행)
+                            // appleLabelVector.remove(apppleLabel);
+                            // repaint();
+                        }
                     }
                 }
-            }
-            if(count == 10){ //드래그 영역 내의 숫자가 10일 경우
-                itemClip.start(); //아이템 제거 오디오 재생하기
-                itemClip.setFramePosition(0); //재생 위치를 첫 프레임으로 변경
-                for(Apple removeApple : removeAppleVector){
-                    AppleGamePanel.this.remove(removeApple);
-                    AppleGamePanel.this.repaint();
-                    appleLabelVector.remove(removeApple);
+
+
+                if (count == 10) { //드래그 영역 내의 숫자가 10일 경우
+                    itemClip.start(); //아이템 제거 오디오 재생하기
+                    itemClip.setFramePosition(0); //재생 위치를 첫 프레임으로 변경
+                    for (Apple removeApple : removeAppleVector) {
+                        AppleGamePanel.this.remove(removeApple);
+                        AppleGamePanel.this.repaint();
+                        appleLabelVector.remove(removeApple);
+                    }
+
+
+                    System.out.println("모든 숫자의 합은 10이다.");
+                    score += removeAppleVector.size();
+                    scoreMark.setText(String.valueOf(score));
+                    try {
+                        dos.writeUTF("/score " + name + " " + score); //서버에게 업데이트된 점수를 보냄
+                    } catch (Exception err) {
+                        err.printStackTrace();
+                    }
+                } else {
+                    removeAppleVector.clear();//10이 되지 않으므로 해당 벡터 초기화
+                    System.out.println("모든 숫자의 합은 10이 아니다.");
                 }
 
-
-                System.out.println("모든 숫자의 합은 10이다.");
-                score += removeAppleVector.size();
-                scoreMark.setText(String.valueOf(score));
-                try{
-                    dos.writeUTF("/score "+name+" "+score); //서버에게 업데이트된 점수를 보냄
-                }catch (Exception err){
-                    err.printStackTrace();
-                }
+                endPoint = startPoint;
+                drawPanel.setStartP(startPoint);
+                drawPanel.setEndP(endPoint);
+                AppleGamePanel.this.repaint();
+                //System.out.println("드래그한 영역 사과 개수 = "+applesInHalfArea);
             }
-            else{
-                removeAppleVector.clear();//10이 되지 않으므로 해당 벡터 초기화
-                System.out.println("모든 숫자의 합은 10이 아니다.");
-            }
-
-            endPoint = startPoint;
-            drawPanel.setStartP(startPoint);
-            drawPanel.setEndP(endPoint);
-            AppleGamePanel.this.repaint();
-            //System.out.println("드래그한 영역 사과 개수 = "+applesInHalfArea);
         }
 
     }
