@@ -9,10 +9,10 @@ import java.util.Collections;
 import java.util.Vector;
 
 public class GameOverPanel extends JPanel {
-    Vector<ClientInfo> clientInfos;
-    AppleGameClient appleGameClient;
-    ReadyPanel readyPanel;
-    JDialog dialog;
+    private Vector<ClientInfo> clientInfos;
+    private AppleGameClient appleGameClient;
+    private ReadyPanel readyPanel;
+    private JDialog dialog;
     private ActionListener homeButtonListener;
     public GameOverPanel(AppleGameClient appleGameClient,Vector<ClientInfo> clientInfos,JDialog dialog){
         setLayout(null);
@@ -47,16 +47,11 @@ public class GameOverPanel extends JPanel {
                 Vector<ClientInfo> clientInfoVector = resetClientInfo(); //클라이언트 정보를 초기화시킴
 
                 dialog.setVisible(false);
-//
                 try {
                     appleGameClient.goToReady(clientInfoVector); //다이얼로그 창 지우고 ready화면으로 이동
-
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
-//                AppleGameClientMain appleGameClientMain = new AppleGameClientMain();
-
-//                appleGameClient.setGoToLogin(true);
             }
         });
         add(homeBtn);
@@ -68,9 +63,6 @@ public class GameOverPanel extends JPanel {
 
         requestFocus();
 
-
-
-      //  setSize(50)
     }
     public Vector<ClientInfo> resetClientInfo(){ //클라이언트 정보를 초기화시킴
         for(ClientInfo clientInfo : clientInfos){
@@ -79,15 +71,6 @@ public class GameOverPanel extends JPanel {
         }
         return  clientInfos;
     }
-    public Vector<ClientInfo> getResetClientInfos(){
-        return this.clientInfos;
-    }
-    public void setReadyPanel(ReadyPanel readyPanel){
-        this.readyPanel = readyPanel;
-    }
-//    public void goToReadyScreen(ReadyPanel readyPanel){
-//        appleGameClient.setContentPane(readyPanel);
-//    }
     public void drawRank(){ //순위를 표시하는 함수
         for(int i=0;i<clientInfos.size();i++){
             ClientInfo clientInfo = clientInfos.get(i);
@@ -113,8 +96,4 @@ public class GameOverPanel extends JPanel {
 
         }
     }
-
-
-
-
 }
