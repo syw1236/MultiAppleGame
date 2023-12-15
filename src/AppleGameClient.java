@@ -46,7 +46,6 @@ public class AppleGameClient extends JFrame {
             dos = new DataOutputStream(out);
             dis = new DataInputStream(is);
 
-
             //서버에서 이름과 선택한 캐릭터 인덱스를 보냄
             if (dos != null) {
                 dos.writeUTF(name);
@@ -55,12 +54,21 @@ public class AppleGameClient extends JFrame {
             }
 
             ois = new ObjectInputStream(is);
-            clientInfos = (Vector<ClientInfo>) ois.readObject(); //클라이언트 정보들이 담긴 벡터를 받음
+            Vector<ClientInfo> receiveClientInfoV = (Vector<ClientInfo>) ois.readObject();
+            if(receiveClientInfoV !=null){
+                clientInfos = receiveClientInfoV;
+                makeReadyScreen(clientInfos); //대기 화면 생성
+            }
+            else {
+                clientInfos = null;
+               // dos.writeUTF("/fullUserOut");
+            }
+            //clientInfos = (Vector<ClientInfo>) ois.readObject(); //클라이언트 정보들이 담긴 벡터를 받음
 
-            System.out.println("AppleGameClient.java clientInfos = " + clientInfos.size());
+//            System.out.println("AppleGameClient.java clientInfos = " + clientInfos.size());
 //            readyPanel = new ReadyPanel(clientSocket, name, clientInfos, icons);
 //            setContentPane(readyPanel);
-            makeReadyScreen(clientInfos); //대기 화면 생성
+//            makeReadyScreen(clientInfos); //대기 화면 생성
             ///잠시 게임 화면 테스트를 위해 준비화면
 
 
@@ -147,6 +155,7 @@ public class AppleGameClient extends JFrame {
 
         horizontalSplitPane.setDividerLocation(0.7);  // 좌우 화면의 비율 조절 (0.5는 중앙으로 설정)
         verticalSplitPane.setDividerLocation(0.4);
+        //System.out.println("gamePanel 너비 => "+gamePanel.getWidth()+" "+gamePanel.getHeight());
 
     }
 
@@ -336,6 +345,14 @@ public class AppleGameClient extends JFrame {
                             gameOverDialog.setLocationRelativeTo(AppleGameClient.this);
                             gameOverDialog.setVisible(true);
                         }
+                    }
+                    else if(msg.startsWith("/fullUser")){
+                        System.out.println("fullUser 메시지 받음");
+                        String warningMessage = msg.substring("/fullUser".length()).trim();
+                        AppleGameClientMain appleGameClientMain = new AppleGameClientMain(); //로그인 화면으로 이동함
+                        AppleGameClient.this.dispose();
+                        JOptionPane.showMessageDialog(appleGameClientMain, warningMessage, "Warning",JOptionPane.ERROR_MESSAGE );
+                        dos.writeUTF("/fullUserOut");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
