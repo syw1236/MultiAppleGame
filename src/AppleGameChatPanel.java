@@ -9,15 +9,15 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public class AppleGameChatPanel extends JPanel {
-    JTextArea chatTextArea;
-    JTextField inputText;
-    Socket clientSocket;
-    InputStream is;
-    OutputStream out;
-    DataInputStream dis;
-    DataOutputStream dos;
+    private JTextArea chatTextArea;
+    private JTextField inputText;
+    private Socket clientSocket;
+    private InputStream is;
+    private OutputStream out;
+    private DataInputStream dis;
+    private DataOutputStream dos;
 
-    String myName;
+    private String myName;
 
     public AppleGameChatPanel(Socket clientSocket,String myName){
         setLayout(null);
@@ -40,7 +40,6 @@ public class AppleGameChatPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(chatTextArea);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER); // 가로 스크롤 비활성화
 
-//        scrollPane.setPreferredSize(new Dimension(600, 200));
         scrollPane.setSize(280,345);
         scrollPane.setLocation(5,5);
         // JFrame의 컨텐트 팬에 JScrollPane 추가
@@ -72,11 +71,6 @@ public class AppleGameChatPanel extends JPanel {
         sendBtn.setFont(new Font("Arial", Font.PLAIN, 16));
         sendBtn.setBounds(245,350,42,35);
         add(sendBtn);
-
-//        ReceiveMsg receiveMsg = new ReceiveMsg();
-//        receiveMsg.start();
-//
-//        requestFocus();
 
     }
     public void appendTextArea(String msg){
