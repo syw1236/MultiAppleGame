@@ -25,11 +25,31 @@ public class AppleGameClientMain extends JFrame { //클라이언트이 처음 �
         ImageIcon yellowAppleIcon = new ImageIcon("image/yellowApple.png");
         ImageIcon greenAppleIcon = new ImageIcon("image/greenApple.png");
         ImageIcon blueAppleIcon = new ImageIcon("image/blueApple.png");
+        ImageIcon starIcon= new ImageIcon("image/star.png");
 
         icons.add(redAppleIcon);
         icons.add(yellowAppleIcon);
         icons.add(greenAppleIcon);
         icons.add(blueAppleIcon);
+
+        JLabel star1 = new JLabel(starIcon);
+        star1.setBounds(395,100,star1.getIcon().getIconWidth(),star1.getIcon().getIconHeight());
+        add(star1);
+
+        JLabel star2 = new JLabel(starIcon);
+        star2.setBounds(620,100,star1.getIcon().getIconWidth(),star1.getIcon().getIconHeight());
+        add(star2);
+
+        JLabel title = new JLabel("사과톡톡");
+        title.setFont(new Font("Arial", Font.BOLD, 55));
+        title.setBounds(425,100,200,55);
+        add(title);
+
+        JLabel titleShadow = new JLabel("사과톡톡");
+        titleShadow.setFont(new Font("Arial", Font.BOLD, 55));
+        titleShadow.setForeground(Color.gray);
+        titleShadow.setBounds(428,100,200,55);
+        add(titleShadow);
 
         nameLa = new JLabel("이름"); //"이름"으로 적히는 부분
         nameLa.setFont(new Font("Arial", Font.BOLD, 30));
