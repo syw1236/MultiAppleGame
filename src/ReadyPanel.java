@@ -11,26 +11,20 @@ import java.net.Socket;
 import java.util.Vector;
 
 public class ReadyPanel extends JPanel {
-    volatile Vector<ClientInfo> clientInfos = new Vector<>();
-    Vector<ImageIcon> icons = new Vector<>();
-    Vector<JLabel> readyVector = new Vector<>(); //레디여부를 나타내는 벡터들
-    volatile Vector<JLabel> clientInfoVector = new Vector<>(); //클라이언트 정보를 가진 라벨들을 담은 벡터
-   // private boolean isReady = false; //레디 여부
-    JLabel isReadyLabel;
-    JLabel myIsReadyLabel;
-    String myName; //해당 클라이언트 이름
-    int myNum; //클라이언트들 중 자신의 번수가 몇 번인지 나타내는 변수
-    boolean myIsready;
-
-    InputStream is;
-    OutputStream out;
-    DataInputStream dis;
-    DataOutputStream dos;
-    ObjectInputStream ois;
-    Socket clientSocket;
-    JTextArea chatTextArea; //전체 채팅창
-//    AppleGameClient appleGameClient;
-    JLabel readyLabel; //전체 화면에 ready를 나타내는 것
+    private volatile Vector<ClientInfo> clientInfos = new Vector<>();
+    private Vector<ImageIcon> icons = new Vector<>();
+    private volatile Vector<JLabel> clientInfoVector = new Vector<>(); //클라이언트 정보를 가진 라벨들을 담은 벡터
+    private JLabel myIsReadyLabel;
+    private String myName; //해당 클라이언트 이름
+    private int myNum; //클라이언트들 중 자신의 번수가 몇 번인지 나타내는 변수
+    private boolean myIsready;
+    private InputStream is;
+    private OutputStream out;
+    private DataInputStream dis;
+    private DataOutputStream dos;
+    private Socket clientSocket;
+    private JTextArea chatTextArea; //전체 채팅창
+    private JLabel readyLabel; //전체 화면에 ready를 나타내는 것
 
 
     public ReadyPanel(Socket clientSocket, String myName, Vector<ClientInfo> clientInfos, Vector<ImageIcon> icons) throws IOException {
@@ -69,7 +63,6 @@ public class ReadyPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(chatTextArea);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER); // 가로 스크롤 비활성화
 
-//        scrollPane.setPreferredSize(new Dimension(600, 200));
         scrollPane.setSize(600,200);
         scrollPane.setLocation(50,400);
         // JFrame의 컨텐트 팬에 JScrollPane 추가
@@ -78,11 +71,9 @@ public class ReadyPanel extends JPanel {
         JTextField inputChat = new JTextField();
         inputChat.setFont(new Font("Arial", Font.PLAIN, 17));
         inputChat.setBounds(50,600,530,50);
-        //inputChat.requestFocus();
         add(inputChat);
 
         JButton readyBtn = new JButton("Ready");
-        //readyBtn.requestFocus();
         readyBtn.setOpaque(true);
         readyBtn.setBorderPainted(false);
         readyBtn.setFont(new Font("Arial", Font.BOLD, 35));
@@ -130,8 +121,6 @@ public class ReadyPanel extends JPanel {
                     err.printStackTrace();
                 }
                 //화면을 로그인 화면으로 이동
-
-
             }
         });
 
@@ -144,7 +133,6 @@ public class ReadyPanel extends JPanel {
 
 
         JButton sendBtn = new JButton("전송");
-        //sendBtn.requestFocus();
         sendBtn.setOpaque(true);
         sendBtn.setForeground(Color.gray);
         sendBtn.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -166,11 +154,6 @@ public class ReadyPanel extends JPanel {
         });
         add(sendBtn);
         requestFocus();
-
-
-
-
-
     }
     public void setClientInfos(Vector<ClientInfo> clientInfos){
         this.clientInfos = clientInfos;
@@ -188,7 +171,6 @@ public class ReadyPanel extends JPanel {
         System.out.println("매개변수로 들어온 clientInfos size");
         System.out.println(clientInfos.size());
 
-
         for(int i=0;i<clientInfos.size();i++) {
             ClientInfo clientInfo = clientInfos.get(i);
             //캐릭터인덱스, 이름
@@ -197,9 +179,6 @@ public class ReadyPanel extends JPanel {
             boolean isReady = clientInfo.getIsReady();
 
             ImageIcon charIcon = icons.get(charIndex);
-            //System.out.println("선택한 캐릭터 인덱스 ="+clientInfo.charIndex);
-
-
             JLabel nameLabel = new JLabel(name); //사용자의 이름
             clientInfoVector.add(nameLabel); //클라이언트 정보 라벨을 담는 벡터에 해당 이름 라벨을 담음
 
@@ -227,7 +206,6 @@ public class ReadyPanel extends JPanel {
 
             JLabel isReadyLabel = new JLabel("Ready"); //ready 여부를 나타내는 라벨
             clientInfoVector.add(isReadyLabel); //클라이언트 정보 라벨을 담는 벡터에 해당 ready 여부를 나타내는 라벨을 담음
-            //readyVector.add(isReadyLabel);
 
             if (name.equals(myName)) {
                 myIsReadyLabel = isReadyLabel;
@@ -276,9 +254,6 @@ public class ReadyPanel extends JPanel {
         if(!name.equals(myName)) {
             System.out.println("if문으로 들어옴");
             clientInfos.add(new ClientInfo(name, 0, charIndex));
-           // newClientInfo = clientInfos;
-           // System.out.println("stArray[1] = "+stArray[1]);
-           // System.out.println("stArray[2] = "+stArray[3]);
             removeClientInfoLabel(clientInfoVector);
             drawClientInfos(clientInfos); //클라이언트 정보를 가지고 있는 부분을 다시 그림
             ReadyPanel.this.repaint();
@@ -303,8 +278,6 @@ public class ReadyPanel extends JPanel {
     }
     synchronized public void readyOn(String name){
         String readyName = name;
-        //readyName = stArray[1];
-       // System.out.println("readyOn으로 받은 메시지 이름 = "+stArray[1]);
         for(int i=0;i<clientInfos.size();i++){
             ClientInfo clientInfo = clientInfos.get(i);
             if(clientInfo.getName().equals(readyName)){
@@ -335,7 +308,4 @@ public class ReadyPanel extends JPanel {
         readyLabel.setText(count);
 
     }
-
-
-
 }
