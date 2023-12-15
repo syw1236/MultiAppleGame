@@ -78,11 +78,11 @@ public class ReadyPanel extends JPanel {
         JTextField inputChat = new JTextField();
         inputChat.setFont(new Font("Arial", Font.PLAIN, 17));
         inputChat.setBounds(50,600,530,50);
-        inputChat.requestFocus();
+        //inputChat.requestFocus();
         add(inputChat);
 
         JButton readyBtn = new JButton("Ready");
-        readyBtn.requestFocus();
+        //readyBtn.requestFocus();
         readyBtn.setOpaque(true);
         readyBtn.setBorderPainted(false);
         readyBtn.setFont(new Font("Arial", Font.BOLD, 35));
@@ -144,7 +144,7 @@ public class ReadyPanel extends JPanel {
 
 
         JButton sendBtn = new JButton("전송");
-        sendBtn.requestFocus();
+        //sendBtn.requestFocus();
         sendBtn.setOpaque(true);
         sendBtn.setForeground(Color.gray);
         sendBtn.setFont(new Font("Arial", Font.PLAIN, 16));
