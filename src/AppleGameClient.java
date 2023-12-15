@@ -21,18 +21,16 @@ public class AppleGameClient extends JFrame {
     volatile private Vector<ClientInfo> clientInfos = new Vector<>(); //클라이언트 정보를 담는 벡터를 생성함
     private Vector<ImageIcon> icons; //사과 캐릭터 배열
     volatile boolean goToReady = false;
-    ReadyPanel readyPanel;
-    AppleGamePanel gamePanel;
-    AppleGameChatPanel chatPanel;
-    AppleGameClientInfoPanel clientInfoPanel;
-    JSplitPane horizontalSplitPane;
-    JSplitPane verticalSplitPane;
-    JDialog gameOverDialog; //다이얼로그 화면
-    GameOverPanel gameOverPanel;
-
-    ReceiveMsg receiveMsg = null;
+    private ReadyPanel readyPanel;
+    private AppleGamePanel gamePanel;
+    private AppleGameChatPanel chatPanel;
+    private AppleGameClientInfoPanel clientInfoPanel;
+    private JSplitPane horizontalSplitPane;
+    private JSplitPane verticalSplitPane;
+    private JDialog gameOverDialog; //다이얼로그 화면
+    private GameOverPanel gameOverPanel;
+    private ReceiveMsg receiveMsg = null;
     public AppleGameClient(String name, int charIndex, Vector<ImageIcon> icons) {
-       // System.out.println("AppleGameCLient 재생성");
         this.name = name;
         this.charIndex = charIndex;
         this.icons = icons;
@@ -61,17 +59,7 @@ public class AppleGameClient extends JFrame {
             }
             else {
                 clientInfos = null;
-               // dos.writeUTF("/fullUserOut");
             }
-            //clientInfos = (Vector<ClientInfo>) ois.readObject(); //클라이언트 정보들이 담긴 벡터를 받음
-
-//            System.out.println("AppleGameClient.java clientInfos = " + clientInfos.size());
-//            readyPanel = new ReadyPanel(clientSocket, name, clientInfos, icons);
-//            setContentPane(readyPanel);
-//            makeReadyScreen(clientInfos); //대기 화면 생성
-            ///잠시 게임 화면 테스트를 위해 준비화면
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -82,52 +70,20 @@ public class AppleGameClient extends JFrame {
 
         receiveMsg = new ReceiveMsg();
         receiveMsg.start();
-//
-//        GoToReadyThread goToReadyThread = new GoToReadyThread();
-//        goToReadyThread.start();
 
-//        GoToLoginThread goToLoginThread = new GoToLoginThread();
-//        goToLoginThread.start();
-
-    }
-    public synchronized void setGoToReady(boolean goToReady){
-        this.goToReady = goToReady;
     }
     public String getName(){
         return this.name;
     }
-    public Vector<ImageIcon> getIcons(){
-        return this.icons;
-    }
-    public Socket getClientSocket(){
-        return this.clientSocket;
-    }
-    public AppleGamePanel getGamePanel(){
-        return this.gamePanel;
-    }
-    public AppleGameChatPanel getChatPanel(){
-        return this.chatPanel;
-    }
-    public synchronized AppleGameClientInfoPanel getClientInfoPanel(){
-        return this.clientInfoPanel;
-    }
     public synchronized void makeReadyScreen(Vector<ClientInfo> clientInfos) throws IOException { //대기화면을 생성하는 것
         getContentPane().removeAll();
         readyPanel = new ReadyPanel(clientSocket, name, clientInfos, icons);
-        readyPanel.setVisible(true);
-        //getContentPane().add(readyPanel); // newComponent는 적절한 컴포넌트로 대체해야 합니다.
-//        setContentPane(readyPanel);
+        readyPanel.setVisible(true);;
         getContentPane().add(readyPanel);
         repaint();
-
-//        for(ClientInfo clientInfo : clientInfos){
-//            System.out.println("클라이언트 ready 여부 _> " + clientInfo.getIsReady());
-//        }
     }
 
     public void makeDiviedScreen(Vector<ClientInfo> clientInfos) throws UnsupportedAudioFileException, IOException { //새로 업데이트된 클라이언트의 정보를 받게 됨
-
-        //ReadyPanel.ReceiveMsg.interrupted();
 
         horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -155,14 +111,10 @@ public class AppleGameClient extends JFrame {
 
         horizontalSplitPane.setDividerLocation(0.7);  // 좌우 화면의 비율 조절 (0.5는 중앙으로 설정)
         verticalSplitPane.setDividerLocation(0.4);
-        //System.out.println("gamePanel 너비 => "+gamePanel.getWidth()+" "+gamePanel.getHeight());
-
     }
 
     public synchronized void goToReady(Vector<ClientInfo> clientInfos) throws IOException { //ready 화면으로 변경하는 함수
-//        this.clientInfos = resetClientInfo();
         this.clientInfos = clientInfos;
-//        makeReadyScreen(clientInfos);
         getContentPane().removeAll();
         readyPanel.setClientInfos(clientInfos);
         readyPanel.removeClientInfoLabel(readyPanel.getRemoveClientInfos());
@@ -171,15 +123,6 @@ public class AppleGameClient extends JFrame {
         readyPanel.countMark("모두 Ready하면 게임이 시작됩니다."); //다시 모두 ready하면 게임이 시작된다는 문구를 표시함
 
         this.repaint();
-//        setGoToReady(false);
-    }
-
-    public synchronized Vector<ClientInfo> resetClientInfo(){ //클라이언트 정보를 초기화시킴
-        for(ClientInfo clientInfo : clientInfos){
-            clientInfo.setScore(0);
-            clientInfo.setIsReady(false);
-        }
-        return  clientInfos;
     }
 
     public void gameOverScreen(){ //게임 오버 화면을 그리는 함수
@@ -202,10 +145,8 @@ public class AppleGameClient extends JFrame {
         chatGrayPanel.setBounds(0,0,chatPanel.getWidth(),chatPanel.getHeight());
         chatPanel.add(chatGrayPanel,0);
         chatPanel.repaint();
-//
         Vector<ClientInfo> updateClientInfos = clientInfoPanel.getClientInfos();
 
-        //if(gameOverDialog == null) {
         gameOverDialog = new JDialog(AppleGameClient.this, "Game Over", Dialog.ModalityType.APPLICATION_MODAL);
         gameOverPanel = new GameOverPanel(AppleGameClient.this, updateClientInfos, gameOverDialog);
 
@@ -215,49 +156,6 @@ public class AppleGameClient extends JFrame {
         gameOverDialog.setVisible(true);
     }
 
-//    class GoToReadyThread extends Thread{ //게임 오버되면 전체 패널의 색상이 회색으로 달라지고 순위를 다이얼로그를 통해 보여준다.
-////        int count = 0;
-//        @Override
-//        public void run(){
-//            while(true){
-//                if(goToReady){ //true면
-//                    System.out.println("게임 오버 메시지 받음 클라이언트 이름 -> "+name);
-//                    Color grayColor = new Color(0, 0, 0, 128);
-//                    JPanel gameGrayPanel = new JPanel();
-//                    gameGrayPanel.setBackground(grayColor);
-//                    gameGrayPanel.setBounds(0,0,gamePanel.getWidth(),gamePanel.getHeight());
-//                    gamePanel.add(gameGrayPanel,0);
-//                    gamePanel.repaint();
-//
-//                    JPanel clientGrayPanel = new JPanel();
-//                    clientGrayPanel.setBackground(grayColor);
-//                    clientGrayPanel.setBounds(0,0,clientInfoPanel.getWidth(),clientInfoPanel.getHeight());
-//                    clientInfoPanel.add(clientGrayPanel,0);
-//                    clientInfoPanel.repaint();
-//
-//                    JPanel chatGrayPanel = new JPanel();
-//                    chatGrayPanel.setBackground(grayColor);
-//                    chatGrayPanel.setBounds(0,0,chatPanel.getWidth(),chatPanel.getHeight());
-//                    chatPanel.add(chatGrayPanel,0);
-//                    chatPanel.repaint();
-////
-//                    Vector<ClientInfo> updateClientInfos = clientInfoPanel.getClientInfos();
-//
-//                    //if(gameOverDialog == null) {
-//                        gameOverDialog = new JDialog(AppleGameClient.this, "Game Over", Dialog.ModalityType.APPLICATION_MODAL);
-//                        gameOverPanel = new GameOverPanel(AppleGameClient.this, updateClientInfos, gameOverDialog);
-//
-//                        gameOverDialog.setContentPane(gameOverPanel);
-//                        gameOverDialog.setSize(500, 500);
-//                        gameOverDialog.setLocationRelativeTo(AppleGameClient.this);
-//                        gameOverDialog.setVisible(true);
-//                   // }
-//                   setGoToReady(false);
-//                }
-//            }
-////            setGoToReady(false);
-//        }
-//    }
     class ReceiveMsg extends Thread { //서버로부터 온 메시지를 수신한다.
 
         @Override
@@ -267,7 +165,6 @@ public class AppleGameClient extends JFrame {
                     String msg = dis.readUTF(); //msg를 가져옴
                     msg = msg.trim(); //trim 메소드를 사용하여 앞 뒤의 공백을 제거
                     String stArray[] = msg.split(" ");
-//                    System.out.println("들어온 메시지 => "+msg);
                     if (msg.startsWith("/readyChat")) { //대기 시간에 나눈 채팅
                         String chatMessage = msg.substring("/readyChat".length()).trim();
                         readyPanel.appendTextArea(chatMessage + "\n");
@@ -289,7 +186,6 @@ public class AppleGameClient extends JFrame {
                         //화면을 로그인 화면으로 이동
                         //만약 해당 이름과 자신이 이름이 동일한 경우에만 로그인 화면으로 이동하도록 해야함
                         if(name.equals(stArray[1])){
-//                            interrupt();
                             break;
                         }
 
@@ -306,7 +202,6 @@ public class AppleGameClient extends JFrame {
                     }
                     else if(msg.startsWith("/count"))
                         readyPanel.countMark(stArray[1]);
-                      // readyLabel.setText(stArray[1]);
 
                     else if (msg.startsWith("/score")) {
                         String name = stArray[1];
@@ -333,7 +228,7 @@ public class AppleGameClient extends JFrame {
                         chatGrayPanel.setBounds(0,0,chatPanel.getWidth(),chatPanel.getHeight());
                         chatPanel.add(chatGrayPanel,0);
                         chatPanel.repaint();
-//
+
                         Vector<ClientInfo> updateClientInfos = clientInfoPanel.getClientInfos();
 
                         if(gameOverDialog == null) {
