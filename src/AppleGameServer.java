@@ -19,6 +19,7 @@ public class AppleGameServer {
     private Socket clientSocket;
     private ServerSocket serverSocket;
     private Vector<ClientService> clientServices = new Vector<>(); //클라이언트와의 연결 정보를 가지고 있는 벡터
+    private Vector<ClientService> removeClientServieces = new Vector<>(); //제거할 클라이언트와의 연결 정보를 가지고 있는 벡터
 
     volatile private Vector<ClientInfo> clientInfos = new Vector<>(); //클라이언트스 정보 벡터
     private boolean allReady = false;
@@ -74,12 +75,16 @@ public class AppleGameServer {
         public void run(){
             while(true){ //사용자 접속을 계속 받기 위해서 While문 사용함
                 try{
+                    System.out.println("clientSerivece size => "+clientServices.size());
+                    for(ClientService clientService:clientServices){
+                        System.out.println("client-> "+clientService);
+                    }
                    System.out.println("Waiting gamer...");
                     clientSocket = serverSocket.accept(); //클라이언트를 기다림
+                    System.out.println("clientService의 사이즈 => "+clientServices.size());
                     System.out.println(clientSocket); //클라이언트 소켓 출력
                     out = clientSocket.getOutputStream();
                     is = clientSocket.getInputStream();
-
                     dis = new DataInputStream(is); //받는 스트림
                     dos = new DataOutputStream(out); //보내는 스트림
 //                    oos = new ObjectOutputStream(out); //클라이언트의 outStream
@@ -87,46 +92,53 @@ public class AppleGameServer {
 
                     String name = dis.readUTF(); //클라이언트의 이름 받아옴
                     int charIndex = Integer.parseInt(dis.readUTF()); //클라이언트의 캐릭터 인덱스를 받아옴
-
-                    System.out.println("client name "+name );
+                    System.out.println("client name " + name);
                     System.out.println("charIndex " + charIndex);
 
-                    clientInfos.add(new ClientInfo(name,0,charIndex));//클라이언트 정보를 통해 객체를 생성하고 배열에 넣음
 
-                    ClientService clientService = new ClientService(name,clientSocket); //클라이언트-서버 통신 스레드 생성
-                    clientServices.add(clientService); //클라이언트 연결 스레드 벡터에 추가
-                    clientService.start(); //스레드 시작
+                    ClientService clientService = new ClientService(name, clientSocket); //클라이언트-서버 통신 스레드 생성
 
+                    if(clientServices.size() == 4){ //채워져야 할 숫자까지 채워졌다면
+                        removeClientServieces.add(clientService);
+                        clientService.start();
 
-
-                    //oos = new ObjectOutputStream(out);
-                    clientService.writeObjectOne(clientInfos); //새로운 클라이언트에게 현재까지 있는 클라이언트들이 정보를 전달함
-
-                    System.out.println("서버에서 adduer 보내기 전 clientSerive의 사이즈 = "+clientServices.size());
-                    String addUsermsg = "/addUser "+name+" "+0+" "+charIndex;
-                    writeStAll(addUsermsg); //모든 클라이언트에게 새로 들어온 클라이언트 정보를 전달함
-                    String chatmsg = "/readyChat "+name+"님이 들어오셨습니다.";
-                    writeStAll(chatmsg);
+                        clientService.writeObjectOne(null);
 
 
-//                    writeObjectAll(clientInfos);
-//                    clientService.writeObjectOne(clientInfos);
+                        dos.writeUTF("/fullUser "+"현재 4명의 플레이어가 게임을 진행하고 있습니다. 다음 기회에 참여해주세요.");
+                    }
+                    else{
+                        clientServices.add(clientService); //클라이언트 연결 스레드 벡터에 추가
+                        clientService.start(); //스레드 시작
 
-                    //                    for(ClientService client : clientServices){
-//                        String msg = "/adduser "+name+" "+charIndex;
-//                        client.writeStAll(msg);
-//                    }
+                        //oos = new ObjectOutputStream(out);
 
-                    //clientService.writeObjectOne(clientInfos);
+                        clientInfos.add(new ClientInfo(name, 0, charIndex));//클라이언트 정보를 통해 객체를 생성하고 배열에 넣음
+
+                        clientService.writeObjectOne(clientInfos); //새로운 클라이언트에게 현재까지 있는 클라이언트들이 정보를 전달함
+
+                        System.out.println("서버에서 adduer 보내기 전 clientSerive의 사이즈 = " + clientServices.size());
+                        String addUsermsg = "/addUser " + name + " " + 0 + " " + charIndex;
+                        writeStAll(addUsermsg); //모든 클라이언트에게 새로 들어온 클라이언트 정보를 전달함
+                        String chatmsg = "/readyChat " + name + "님이 들어오셨습니다.";
+                        writeStAll(chatmsg);
+                    }
 
 
-
-
-
-
-                    //objectOutputStream.writeObject(clientI); //클라이언트 정보 전송
-
-
+//                    clientServices.add(clientService); //클라이언트 연결 스레드 벡터에 추가
+//                    clientService.start(); //스레드 시작
+//
+//                       //oos = new ObjectOutputStream(out);
+//
+//                    clientInfos.add(new ClientInfo(name, 0, charIndex));//클라이언트 정보를 통해 객체를 생성하고 배열에 넣음
+//
+//                    clientService.writeObjectOne(clientInfos); //새로운 클라이언트에게 현재까지 있는 클라이언트들이 정보를 전달함
+//
+//                    System.out.println("서버에서 adduer 보내기 전 clientSerive의 사이즈 = " + clientServices.size());
+//                    String addUsermsg = "/addUser " + name + " " + 0 + " " + charIndex;
+//                    writeStAll(addUsermsg); //모든 클라이언트에게 새로 들어온 클라이언트 정보를 전달함
+//                    String chatmsg = "/readyChat " + name + "님이 들어오셨습니다.";
+//                    writeStAll(chatmsg);
 
                 }catch (Exception e){
                     try {
@@ -143,27 +155,6 @@ public class AppleGameServer {
         }
 
     }
-
-//    class CheckReady extends Thread{ //클라이언트들이 모두 ready 상태 인지 계속 체크하는 것
-//
-//        @Override
-//        public void run(){
-//            while(true){
-//                int count = 0;
-//                for(ClientInfo clientInfo:clientInfos){
-//                    boolean isReady = clientInfo.getIsReady();
-//                    if(isReady) {
-//                        System.out.println("COUNT UP");
-//                        count++;
-//                    }
-//                }
-//                if(count==4) {
-//                    System.out.println("COUNT IS 4");
-//                    allReady = true;
-//                }
-//            }
-//        }
-//    }
 
     synchronized public void removeClientService(ClientService removeClientService){
         clientServices.remove(removeClientService);
@@ -243,7 +234,7 @@ public class AppleGameServer {
                         writeStAll(msg+"\n"); //클라이언트 쪽에서 메시지를 받으면 클라이언트 쪽의 ready 여부가 변경된다.
                         sleep(100);
 
-                        if(count == 2){ //만약 모두가 ready라면 /allReady 라는 메시지를 보낸다. ///
+                        if(count == 4){ //만약 모두가 ready라면 /allReady 라는 메시지를 보낸다. ///
                             startCount = 5; //startCount 뒤에 게임이 시작되는 것임!
                             countClip.start(); //카운트다운 오디오 시작
                             countClip.setFramePosition(0); //프레임 초기화 시킴
@@ -291,18 +282,27 @@ public class AppleGameServer {
                         clientInfos.remove(removeClientInfo); //클라이언트 정보 벡터에서 삭제
 
                         //클라이언트-서버 연결 삭제
-                        removeClientService = null;
-                        for(ClientService clientService:clientServices){
-                            String name = clientService.getName();
-                            if(name.equals(stArray[1])){
-                                removeClientService = clientService;
-                                break;
-                            }
-
-                        }
-                        removeClientService(removeClientService); // 해당 스레드 삭제하는 함수 호출
+//                        removeClientService = null;
+//                        for(ClientService clientService:clientServices){
+//                            String name = clientService.getName();
+//                            if(name.equals(stArray[1])){
+//                                removeClientService = clientService;
+//                                break;
+//                            }
+//
+//                        }
+                        //removeClientService(removeClientService); // 해당 스레드 삭제하는 함수 호출
                         //client와 통신하는 스레드에서도 삭제해야함
-                        setStopTrue();
+                        //setStopTrue();
+                        if(name.equals(stArray[1])) {
+                            clientServices.remove(this);
+                            break;
+                        }
+//                        if(name.equals(removeClientInfo.getName()))
+//                            setStopTrue();
+                    }
+                    else if(msg.startsWith("/fullUserOut")){
+                        removeClientServieces.clear();
                     }
 
                 } catch (Exception e) {
@@ -354,7 +354,7 @@ public class AppleGameServer {
                 try {
 
                     dos.writeUTF(msg);
-                    System.out.println("client => "+clientService.clientSocket);
+                    //System.out.println("client => "+clientService.clientSocket);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
