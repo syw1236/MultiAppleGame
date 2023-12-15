@@ -4,15 +4,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class DrawPanel extends JPanel {
-    Point startPoint;
-    Point endPoint;
+    private Point startPoint;
+    private Point endPoint;
 
     public DrawPanel() {
         setOpaque(false);
         setVisible(true);
-
         requestFocus();
-
     }
 
     public void setStartP(Point startPoint) {
@@ -26,7 +24,6 @@ public class DrawPanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
 
         if (startPoint != null && endPoint != null) {
             //System.out.println("drawPnael drawing");
