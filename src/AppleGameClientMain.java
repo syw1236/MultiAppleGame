@@ -8,14 +8,14 @@ import java.util.Vector;
 
 
 public class AppleGameClientMain extends JFrame { //클라이언트이 처음 시작 화면이 되는 것
-    JLabel nameLa; //"이름"으로 표시되는 라벨
-    String name; //클라이언트가 입력한 이름
-    JTextField inputName; //이름 입력하는 곳
-    JLabel clickIcon; //아이콘을 클릭하라는 라벨
-    Vector<ImageIcon> icons = new Vector<>(); //아이콘들 모음 벡터
-    JButton gameStartBtn; //게임 참가 버튼
+    private JLabel nameLa; //"이름"으로 표시되는 라벨
+    private String name; //클라이언트가 입력한 이름
+    private JTextField inputName; //이름 입력하는 곳
+    private JLabel clickIcon; //아이콘을 클릭하라는 라벨
+    private Vector<ImageIcon> icons = new Vector<>(); //아이콘들 모음 벡터
+    private JButton gameStartBtn; //게임 참가 버튼
 
-    int charIndex = -1; //선택한 캐릭터 인덱스
+    private int charIndex = -1; //선택한 캐릭터 인덱스
 
     public AppleGameClientMain(){
 
@@ -102,10 +102,6 @@ public class AppleGameClientMain extends JFrame { //클라이언트이 처음 �
                     AppleGameClientMain.this.dispose(); //창을 꺼버림
 
                 }
-
-
-
-
             }
 
         });
