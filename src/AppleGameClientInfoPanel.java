@@ -4,8 +4,8 @@ import java.lang.invoke.VarHandle;
 import java.util.Vector;
 
 public class AppleGameClientInfoPanel extends JPanel {
-    Vector<ClientInfo> clientInfos;
-    Vector<ImageIcon> icons;
+    private Vector<ClientInfo> clientInfos;
+    private Vector<ImageIcon> icons;
     volatile Vector<JLabel> clientInfoLabels = new Vector<>();
     public AppleGameClientInfoPanel(Vector<ClientInfo> clientInfos, Vector<ImageIcon> icons){
         setLayout(null);
@@ -38,7 +38,6 @@ public class AppleGameClientInfoPanel extends JPanel {
             int score = clientInfo.getScore();
             JLabel scoreLabel = new JLabel(Integer.toString(score));
             clientInfo.setScoreLabel(scoreLabel);
-            //clientInfoLabels.add(scoreLabel);
             scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
             scoreLabel.setBounds(200,i*55+25,200,30);
             add(scoreLabel);
