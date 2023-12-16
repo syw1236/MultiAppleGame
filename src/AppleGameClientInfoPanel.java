@@ -12,6 +12,8 @@ public class AppleGameClientInfoPanel extends JPanel {
         this.clientInfos = clientInfos;
         this.icons = icons;
         drawClientInfo(clientInfos); //클라이언트들의 현재 게임 정보를 담은 화면을 그리는 함수 호출
+
+        requestFocus();
     }
     public void drawClientInfo(Vector<ClientInfo> clientInfos){ //클라이언트들의 현재 게임 정보를 담은 화면을 그리는 함수
         for(int i = 0;i<clientInfos.size();i++){
@@ -25,21 +27,21 @@ public class AppleGameClientInfoPanel extends JPanel {
 
             JLabel charLabel = new JLabel(changeCharIcon);
             clientInfoLabels.add(charLabel);
-            charLabel.setBounds(10,i*55+10,charLabel.getIcon().getIconWidth(),charLabel.getIcon().getIconHeight());
+            charLabel.setBounds(10,i*55+5,charLabel.getIcon().getIconWidth(),charLabel.getIcon().getIconHeight());
             add(charLabel);
 
             String name = clientInfo.getName();
             JLabel nameLabel = new JLabel(name);
             clientInfoLabels.add(nameLabel);
             nameLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            nameLabel.setBounds(100,i*55+25,150,30);
+            nameLabel.setBounds(100,i*55+20,150,30);
             add(nameLabel);
 
             int score = clientInfo.getScore();
             JLabel scoreLabel = new JLabel(Integer.toString(score));
             clientInfo.setScoreLabel(scoreLabel);
             scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            scoreLabel.setBounds(200,i*55+25,200,30);
+            scoreLabel.setBounds(200,i*55+20,200,30);
             add(scoreLabel);
 
         }
