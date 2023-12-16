@@ -28,6 +28,11 @@ public class AppleGameServer {
     private File countFile;
     private AudioInputStream countStream;
     private String countPath = "audio/count.wav";
+    private volatile File audioFile; //게임 브금 파일
+    private volatile Clip audioClip; //사과 브금 오디오 클립
+    private String audioPath = "audio/apple.wav";
+    private AudioThread audioThread;
+
     public AppleGameServer(){
         try{
             serverSocket = new ServerSocket(9999); //서버 소켓 생성
@@ -210,6 +215,9 @@ public class AppleGameServer {
                             for(ClientInfo clientInfo:clientInfos){ //다시 모두 게임 레디 초기화를 시킴
                                 clientInfo.setIsReady(false);
                             }
+                            audioThread = new AudioThread();
+                            audioThread.start();
+
                         }
                     }
                     else if(msg.startsWith("/readyOff")){
@@ -239,6 +247,9 @@ public class AppleGameServer {
                     }
                     else if(msg.startsWith("/fullUserOut")){
                         removeClientServieces.clear();
+                    }
+                    else if(msg.startsWith("/gameOver")){
+                        audioThread.setStop(true);
                     }
 
                 } catch (Exception e) {
@@ -277,6 +288,35 @@ public class AppleGameServer {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+
+    class AudioThread extends Thread{
+        private volatile boolean stop = false; //멈추는 stop 변수
+        public AudioThread(){
+            try {
+                audioClip = AudioSystem.getClip(); //비어있는 사과 브금 오디오 클립 만들기
+                audioFile = new File(audioPath); //오디오 파일의 경로명
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile); //오디오 파일로부터
+                audioClip.open(audioStream); //재생할 오디오 스트림 열기
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+
+
+        public synchronized void setStop(boolean stop){
+            this.stop = stop;
+        }
+        @Override
+        public void run(){
+            while(!stop){ //stop이 false이면 작동 중지
+                audioClip.loop(Clip.LOOP_CONTINUOUSLY);
+            }
+            audioClip.stop();
+            System.out.println("끝남");
         }
     }
 }
