@@ -34,13 +34,9 @@ public class AppleGamePanel extends JPanel {
     private int score = 0;
     private JLabel scoreMark; //화면 상에 점수를 나타내는 레이블
     private AppleGameClient appleGameClient;
-    private volatile Clip audioClip; //사과 브금 오디오 클립
     private volatile Clip itemClip; //사과 아이템 브금 오디오 클립
-    private volatile File audioFile; //게임 브금 파일
     private volatile File itemFile; //사과 아이템 브금 파일
     private String itemPath = "audio/item.wav";
-    private String audioPath = "audio/apple.wav";
-//    private AudioThread audioThread;
 
     private DragActionListener dragActionListener = new DragActionListener();
     public AppleGamePanel(String name,Socket clientSocket,ImageIcon appleIcon,AppleGameClient appleGameClient) throws UnsupportedAudioFileException, IOException {
@@ -105,9 +101,6 @@ public class AppleGamePanel extends JPanel {
         }catch (Exception e){
             e.printStackTrace();
         }
-
-//        audioThread = new AudioThread();
-//        audioThread.start();// 노래 스레드 시작
 
         requestFocus();
 
@@ -266,34 +259,6 @@ public class AppleGamePanel extends JPanel {
         }
 
     }
-
-//    class AudioThread extends Thread{
-//        private volatile boolean stop = false; //멈추는 stop 변수
-//        public AudioThread(){
-//            try {
-//                audioClip = AudioSystem.getClip(); //비어있는 사과 브금 오디오 클립 만들기
-//                audioFile = new File(audioPath); //오디오 파일의 경로명
-//                AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile); //오디오 파일로부터
-//                audioClip.open(audioStream); //재생할 오디오 스트림 열기
-//            }catch (Exception e){
-//                e.printStackTrace();
-//            }
-//
-//        }
-//
-//
-//        public synchronized void setStop(boolean stop){
-//            this.stop = stop;
-//        }
-//        @Override
-//        public void run(){
-//            while(!stop){ //stop이 false이면 작동 중지
-//                audioClip.loop(Clip.LOOP_CONTINUOUSLY);
-//            }
-//            audioClip.stop();
-//            System.out.println("끝남");
-//        }
-//    }
 
     class TimerThread extends Thread{
         JLabel timer;
