@@ -109,6 +109,8 @@ public class AppleGamePanel extends JPanel {
         audioThread = new AudioThread();
         audioThread.start();// 노래 스레드 시작
 
+        requestFocus();
+
     }
     public void makeApple(){ //게임을 위한 사과들을 생성하는 함수
         ImageIcon apple1 = new ImageIcon("image/1.png");
@@ -138,7 +140,7 @@ public class AppleGamePanel extends JPanel {
 
 
         for(int i=0;i<13;i++){
-            for(int j=0;j<10;j++){
+            for(int j=0;j<8;j++){
                 int randomNum = random.nextInt(9);
                 ImageIcon appleIcon = appleVector.get(randomNum);
 
@@ -148,7 +150,7 @@ public class AppleGamePanel extends JPanel {
                 Apple appleLabel = new Apple();
                 appleLabel.setIcon(changeAppleIcon);
                 appleLabel.setInt(randomNum+1);
-                appleLabel.setBounds(i*50+20,j*60+60,appleLabel.getIcon().getIconWidth(),appleLabel.getIcon().getIconHeight());
+                appleLabel.setBounds(i*50+20,j*60+80,appleLabel.getIcon().getIconWidth(),appleLabel.getIcon().getIconHeight());
                 appleLabelVector.add(appleLabel);
                 add(appleLabel);
             }
