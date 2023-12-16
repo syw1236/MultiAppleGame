@@ -64,7 +64,7 @@ public class AppleGameClient extends JFrame {
             e.printStackTrace();
         }
 
-        setSize(1000, 700);
+        setSize(900, 610);
         setVisible(true);
 
 
@@ -207,39 +207,6 @@ public class AppleGameClient extends JFrame {
                         String name = stArray[1];
                         int score = Integer.parseInt(stArray[2]);
                         clientInfoPanel.setClientInfoScore(name,score);
-                    }
-                    else if(msg.startsWith("/gameOver")){
-                        System.out.println("게임 오버 메시지 받음 클라이언트 이름 -> "+name);
-                        Color grayColor = new Color(0, 0, 0, 128);
-                        JPanel gameGrayPanel = new JPanel();
-                        gameGrayPanel.setBackground(grayColor);
-                        gameGrayPanel.setBounds(0,0,gamePanel.getWidth(),gamePanel.getHeight());
-                        gamePanel.add(gameGrayPanel,0);
-                        gamePanel.repaint();
-
-                        JPanel clientGrayPanel = new JPanel();
-                        clientGrayPanel.setBackground(grayColor);
-                        clientGrayPanel.setBounds(0,0,clientInfoPanel.getWidth(),clientInfoPanel.getHeight());
-                        clientInfoPanel.add(clientGrayPanel,0);
-                        clientInfoPanel.repaint();
-
-                        JPanel chatGrayPanel = new JPanel();
-                        chatGrayPanel.setBackground(grayColor);
-                        chatGrayPanel.setBounds(0,0,chatPanel.getWidth(),chatPanel.getHeight());
-                        chatPanel.add(chatGrayPanel,0);
-                        chatPanel.repaint();
-
-                        Vector<ClientInfo> updateClientInfos = clientInfoPanel.getClientInfos();
-
-                        if(gameOverDialog == null) {
-                            gameOverDialog = new JDialog(AppleGameClient.this, "Game Over", Dialog.ModalityType.APPLICATION_MODAL);
-                            gameOverPanel = new GameOverPanel(AppleGameClient.this, updateClientInfos, gameOverDialog);
-
-                            gameOverDialog.setContentPane(gameOverPanel);
-                            gameOverDialog.setSize(500, 500);
-                            gameOverDialog.setLocationRelativeTo(AppleGameClient.this);
-                            gameOverDialog.setVisible(true);
-                        }
                     }
                     else if(msg.startsWith("/fullUser")){
                         System.out.println("fullUser 메시지 받음");
