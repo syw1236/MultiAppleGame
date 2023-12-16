@@ -50,8 +50,6 @@ public class AppleGameChatPanel extends JPanel {
         inputText.setBounds(3,303,220,35);
         add(inputText);
 
-//        inputText.requestFocus();
-
         JButton sendBtn = new JButton("전송");
         sendBtn.addActionListener(new ActionListener() {
             @Override
