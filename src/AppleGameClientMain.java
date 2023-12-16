@@ -33,42 +33,42 @@ public class AppleGameClientMain extends JFrame { //클라이언트이 처음 �
         icons.add(blueAppleIcon);
 
         JLabel star1 = new JLabel(starIcon);
-        star1.setBounds(395,100,star1.getIcon().getIconWidth(),star1.getIcon().getIconHeight());
+        star1.setBounds(340,100,star1.getIcon().getIconWidth(),star1.getIcon().getIconHeight());
         add(star1);
 
         JLabel star2 = new JLabel(starIcon);
-        star2.setBounds(620,100,star1.getIcon().getIconWidth(),star1.getIcon().getIconHeight());
+        star2.setBounds(565,100,star1.getIcon().getIconWidth(),star1.getIcon().getIconHeight());
         add(star2);
 
         JLabel title = new JLabel("사과톡톡");
         title.setFont(new Font("Arial", Font.BOLD, 55));
-        title.setBounds(425,100,200,55);
+        title.setBounds(370,100,200,55);
         add(title);
 
         JLabel titleShadow = new JLabel("사과톡톡");
         titleShadow.setFont(new Font("Arial", Font.BOLD, 55));
         titleShadow.setForeground(Color.gray);
-        titleShadow.setBounds(428,100,200,55);
+        titleShadow.setBounds(373,100,200,55);
         add(titleShadow);
 
         nameLa = new JLabel("이름"); //"이름"으로 적히는 부분
         nameLa.setFont(new Font("Arial", Font.BOLD, 30));
-        nameLa.setBounds(350,200,100,50);
+        nameLa.setBounds(335,200,100,50);
 
         inputName = new JTextField();
         inputName.setFont(new Font("Arial",Font.PLAIN,20));
-        inputName.setBounds(450,200,200,50);
+        inputName.setBounds(410,200,200,50);
 
 
         clickIcon = new JLabel("캐릭터를 선택해주세요.");
         clickIcon.setFont(new Font("Arial",Font.BOLD,25));
-        clickIcon.setBounds(350,290,300,50);
+        clickIcon.setBounds(335,290,300,50);
 
         for(int i=0;i<icons.size();i++){ //사과 아이콘 버튼을 생성시키고 부착
             int index = i;
             ImageIcon icon = icons.get(i);
             JButton iconBtn = new JButton(icon);
-            iconBtn.setBounds(i*100+350,350,icon.getIconWidth(),icon.getIconHeight()+10);
+            iconBtn.setBounds(i*100+300,350,icon.getIconWidth(),icon.getIconHeight()+10);
             iconBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -82,7 +82,7 @@ public class AppleGameClientMain extends JFrame { //클라이언트이 처음 �
 
         gameStartBtn = new JButton("게임 참가");
         gameStartBtn.setFont(new Font("Arial", Font.BOLD, 30));
-        gameStartBtn.setBounds(400,450,200,50);
+        gameStartBtn.setBounds(375,450,200,50);
         gameStartBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) { //게임 참가 버튼을 클릭할 경우
@@ -112,9 +112,10 @@ public class AppleGameClientMain extends JFrame { //클라이언트이 처음 �
         add(clickIcon); //"캐릭터를 선택해주세요."
         add(gameStartBtn); //게임 참가 버튼
 
-        setSize(1000,700);
+        setSize(900,610);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        requestFocus();
 
     }
 
