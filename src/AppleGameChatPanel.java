@@ -40,17 +40,17 @@ public class AppleGameChatPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(chatTextArea);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER); // 가로 스크롤 비활성화
 
-        scrollPane.setSize(280,345);
+        scrollPane.setSize(253,300);
         scrollPane.setLocation(5,5);
         // JFrame의 컨텐트 팬에 JScrollPane 추가
         add(scrollPane);
 
         inputText = new JTextField();
         inputText.setFont(new Font("Arial", Font.PLAIN, 17));
-        inputText.setBounds(3,350,245,35);
+        inputText.setBounds(3,303,220,35);
         add(inputText);
 
-        inputText.requestFocus();
+//        inputText.requestFocus();
 
         JButton sendBtn = new JButton("전송");
         sendBtn.addActionListener(new ActionListener() {
@@ -69,8 +69,9 @@ public class AppleGameChatPanel extends JPanel {
         });
         sendBtn.setForeground(Color.gray);
         sendBtn.setFont(new Font("Arial", Font.PLAIN, 16));
-        sendBtn.setBounds(245,350,42,35);
+        sendBtn.setBounds(220,303,42,35);
         add(sendBtn);
+        requestFocus();
 
     }
     public void appendTextArea(String msg){
