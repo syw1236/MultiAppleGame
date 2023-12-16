@@ -40,7 +40,7 @@ public class AppleGamePanel extends JPanel {
     private volatile File itemFile; //사과 아이템 브금 파일
     private String itemPath = "audio/item.wav";
     private String audioPath = "audio/apple.wav";
-    private AudioThread audioThread;
+//    private AudioThread audioThread;
 
     private DragActionListener dragActionListener = new DragActionListener();
     public AppleGamePanel(String name,Socket clientSocket,ImageIcon appleIcon,AppleGameClient appleGameClient) throws UnsupportedAudioFileException, IOException {
@@ -106,8 +106,8 @@ public class AppleGamePanel extends JPanel {
             e.printStackTrace();
         }
 
-        audioThread = new AudioThread();
-        audioThread.start();// 노래 스레드 시작
+//        audioThread = new AudioThread();
+//        audioThread.start();// 노래 스레드 시작
 
         requestFocus();
 
@@ -267,33 +267,33 @@ public class AppleGamePanel extends JPanel {
 
     }
 
-    class AudioThread extends Thread{
-        private volatile boolean stop = false; //멈추는 stop 변수
-        public AudioThread(){
-            try {
-                audioClip = AudioSystem.getClip(); //비어있는 사과 브금 오디오 클립 만들기
-                audioFile = new File(audioPath); //오디오 파일의 경로명
-                AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile); //오디오 파일로부터
-                audioClip.open(audioStream); //재생할 오디오 스트림 열기
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-        }
-
-
-        public synchronized void setStop(boolean stop){
-            this.stop = stop;
-        }
-        @Override
-        public void run(){
-            while(!stop){ //stop이 false이면 작동 중지
-                audioClip.loop(Clip.LOOP_CONTINUOUSLY);
-            }
-            audioClip.stop();
-            System.out.println("끝남");
-        }
-    }
+//    class AudioThread extends Thread{
+//        private volatile boolean stop = false; //멈추는 stop 변수
+//        public AudioThread(){
+//            try {
+//                audioClip = AudioSystem.getClip(); //비어있는 사과 브금 오디오 클립 만들기
+//                audioFile = new File(audioPath); //오디오 파일의 경로명
+//                AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile); //오디오 파일로부터
+//                audioClip.open(audioStream); //재생할 오디오 스트림 열기
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
+//
+//        }
+//
+//
+//        public synchronized void setStop(boolean stop){
+//            this.stop = stop;
+//        }
+//        @Override
+//        public void run(){
+//            while(!stop){ //stop이 false이면 작동 중지
+//                audioClip.loop(Clip.LOOP_CONTINUOUSLY);
+//            }
+//            audioClip.stop();
+//            System.out.println("끝남");
+//        }
+//    }
 
     class TimerThread extends Thread{
         JLabel timer;
@@ -323,7 +323,11 @@ public class AppleGamePanel extends JPanel {
             }
             //게임이 끝났을 떄 수행
             System.out.println("goToReady true로 변경함");
-            audioThread.setStop(true); //스레드의 stop 변수를 true로 변경하여 스레드를 중지시킴
+            try{
+                dos.writeUTF("/gameOver");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             appleGameClient.gameOverScreen(); //게임 오버 화면 나타냄
         }
     }
