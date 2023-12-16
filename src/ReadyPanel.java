@@ -49,7 +49,7 @@ public class ReadyPanel extends JPanel {
         readyLabel.setVerticalAlignment(SwingConstants.CENTER);
         readyLabel.setOpaque(true);
         setReadyLabelColor(readyLabel,Color.RED,Color.YELLOW);
-        readyLabel.setBounds(1,1,1000,50);
+        readyLabel.setBounds(1,1,900,50);
         add(readyLabel);
 
         drawClientInfos(clientInfos); //클라이언트들의 정보를 그리는 함수 호출
@@ -57,20 +57,20 @@ public class ReadyPanel extends JPanel {
         //채팅창
         chatTextArea = new JTextArea();
         chatTextArea.setFont(new Font("Arial", Font.PLAIN, 17));
-        chatTextArea.setBounds(50,450,550,200);
+        chatTextArea.setBounds(50,330,550,200);
         chatTextArea.setLineWrap(true); // 자동 줄 바꿈 활성화
         chatTextArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(chatTextArea);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER); // 가로 스크롤 비활성화
 
         scrollPane.setSize(600,200);
-        scrollPane.setLocation(50,400);
+        scrollPane.setLocation(50,330);
         // JFrame의 컨텐트 팬에 JScrollPane 추가
         add(scrollPane);
 
         JTextField inputChat = new JTextField();
         inputChat.setFont(new Font("Arial", Font.PLAIN, 17));
-        inputChat.setBounds(50,600,530,50);
+        inputChat.setBounds(50,529,530,50);
         add(inputChat);
 
         JButton readyBtn = new JButton("Ready");
@@ -102,12 +102,12 @@ public class ReadyPanel extends JPanel {
 
             }
         });
-        readyBtn.setBounds(680,560,300,50);
+        readyBtn.setBounds(680,475,200,50);
         add(readyBtn);
 
         ImageIcon backIcon = new ImageIcon("image/back.png");
         JButton backLoginBtn = new JButton(backIcon);
-        backLoginBtn.setBounds(950,625,backLoginBtn.getIcon().getIconWidth(),backLoginBtn.getIcon().getIconHeight());
+        backLoginBtn.setBounds(835,540,backLoginBtn.getIcon().getIconWidth(),backLoginBtn.getIcon().getIconHeight());
         backLoginBtn.setBorder(new EmptyBorder(0, 0, 0, 0)); // 빈 Border로 설정
         add(backLoginBtn);
 
@@ -126,7 +126,7 @@ public class ReadyPanel extends JPanel {
 
 
         JLabel backLoginLabel = new JLabel("로그인 화면으로 돌아가기");
-        backLoginLabel.setBounds(810,625,200,30);
+        backLoginLabel.setBounds(700,540,190,30);
         backLoginLabel.setForeground(Color.gray);
         backLoginLabel.setFont(new Font("Arial", Font.BOLD, 13));
         add(backLoginLabel);
@@ -136,7 +136,7 @@ public class ReadyPanel extends JPanel {
         sendBtn.setOpaque(true);
         sendBtn.setForeground(Color.gray);
         sendBtn.setFont(new Font("Arial", Font.PLAIN, 16));
-        sendBtn.setBounds(580,600,70,50);
+        sendBtn.setBounds(580,529,70,50);
         sendBtn.addActionListener(new ActionListener() { //메시지가 오면
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -188,7 +188,7 @@ public class ReadyPanel extends JPanel {
             nameLabel.setFont(new Font("Arial", Font.BOLD, 25));
             nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
             nameLabel.setVerticalAlignment(SwingConstants.CENTER);
-            nameLabel.setBounds(i * 210 + 100, 100, 150, 30);
+            nameLabel.setBounds(i * 210 + 50, 65, 150, 30);
             add(nameLabel);
 
             int width = 150;  // 원하는 너비
@@ -201,7 +201,7 @@ public class ReadyPanel extends JPanel {
 
             charLabel.setOpaque(true);
             charLabel.setBackground(Color.white);
-            charLabel.setBounds(i * 210 + 100, 140, charLabel.getIcon().getIconWidth(), charLabel.getIcon().getIconHeight());
+            charLabel.setBounds(i * 210 + 50, 100, charLabel.getIcon().getIconWidth(), charLabel.getIcon().getIconHeight());
             add(charLabel);
 
             JLabel isReadyLabel = new JLabel("Ready"); //ready 여부를 나타내는 라벨
@@ -228,10 +228,11 @@ public class ReadyPanel extends JPanel {
                 setReadyLabelColor(isReadyLabel, Color.gray, Color.lightGray);
             }
 
-            isReadyLabel.setBounds(i*210+85,295,180,60);
+            isReadyLabel.setBounds(i*210+35,255,180,60);
             add(isReadyLabel);
             this.repaint();
             System.out.println("readyPanel draw 함수 완료");
+            requestFocus();
 
 
         }
